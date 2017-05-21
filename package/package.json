@@ -1,0 +1,20 @@
+{
+  "name": "@ngx-kit/styler",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "ngx-kit - styler",
+  "main": "bundle/ngx-kit-styler.umd.js",
+  "module": "index.js",
+  "types": "index.d.ts",
+  "author": "Sasha Novik",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/ngx-kit/styler.git",
+    "type": "git"
+  },
+  "peerDependencies": {
+    "@angular/compiler": "^4.0.3",
+    "@angular/compiler-cli": "^4.0.3",
+    "@angular/core": "^4.0.3",
+    "typestyle": "^1.3.2"
+  }
+}

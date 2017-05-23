@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { style as s } from 'typestyle';
+
 import { StylerState, StylerStateValue } from './interfaces';
 
 /**

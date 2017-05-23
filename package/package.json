@@ -12,9 +12,9 @@
     "type": "git"
   },
   "peerDependencies": {
-    "@angular/compiler": "^4.0.3",
-    "@angular/compiler-cli": "^4.0.3",
-    "@angular/core": "^4.0.3",
-    "typestyle": "^1.3.2"
+    "@angular/compiler": "0.0.0-ANGULAR-PLACEHOLDER",
+    "@angular/compiler-cli": "0.0.0-ANGULAR-PLACEHOLDER",
+    "@angular/core": "0.0.0-ANGULAR-PLACEHOLDER",
+    "typestyle": "0.0.0-TYPESTYLE-PLACEHOLDER"
   }
 }

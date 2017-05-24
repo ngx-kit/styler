@@ -71,6 +71,22 @@ import { StylerModule } from '@ngx-kit/styler';
     ...
 ```
 
+### Register media styles
+
+```typescript
+this.styler.register({
+  ...
+  $media: [
+    [{minWidth:0, maxWidth:600}, {
+      background: 'yellowgreen',
+    }],
+    [{minWidth:601}, {
+      background: 'skyblue',
+    }],
+  ],
+});
+```
+
 ### Move styles to a separate file
 
 TBD

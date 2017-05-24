@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { style as s } from 'typestyle';
+import { media, style as s } from 'typestyle';
 
 import { StylerState, StylerStateValue } from './interfaces';
+import { clone } from './utils';
 
 /**
  * @todo interfaces!!
  * @todo add (!replace) styles on additional registrations (or add upgrade methods)
- * @todo cache
+ * @todo optimize & add cache
  */
 
 @Injectable()
@@ -40,8 +41,8 @@ export class StylerService {
           .reduce((c, s) => {
             return {...c, ...s};
           }, base);
-      // get class name (by typestyle)
-      return s(compiled);
+      // get className (by typestyle)
+      return this.transpile(clone(compiled));
     } else {
       throw new Error(`Styler: component does not have "${name}" property!`);
     }
@@ -64,6 +65,17 @@ export class StylerService {
     } else {
       throw new Error(`Styler: state "${name} not registered!`);
     }
+  }
+
+  private transpile(compiled: any): string {
+    // media
+    const $media: any[] = compiled['$media'] || [];
+    delete(compiled['$media']);
+    // generate className
+    return s(
+        compiled,
+        ...$media.map(rule => media(rule[0], rule[1])),
+    );
   }
 
 }

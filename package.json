@@ -1,6 +1,6 @@
 {
   "name": "ngx-kit-styler",
-  "version": "1.0.0-alpha.1",
+  "version": "0.0.0",
   "license": "MIT",
   "scripts": {
     "build": "npm run build:clean && npm run build:ngc && npm run build:release",

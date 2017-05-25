@@ -20,7 +20,7 @@ export class StylerService {
     for (const elementName in def) {
       this.registerElement(elementName, def[elementName]);
     }
-    console.log('reg def', def, this.elements);
+//    console.log('reg def', def, this.elements);
   }
 
   registerElement(name: string, def: ElementDef): void {
@@ -74,7 +74,7 @@ export class StylerService {
           .reduce((c, s) => {
             return {...c, ...s};
           }, base);
-      console.log('lets trnslp', elementName, base, merged);
+//      console.log('lets trnslp', elementName, base, merged);
       // get className (by typestyle)
       return this.transpile(merged);
     } else {

@@ -65,7 +65,7 @@ import { StylerModule } from '@ngx-kit/styler';
     this.styler.register({
       host: {
         border: '1px solid green',
-        paddin: 8,
+        padding: 8,
       },
     });
     ...
@@ -87,10 +87,49 @@ this.styler.register({
 });
 ```
 
+### Element state styling
+
+Define element states:
+ 
+```typescript
+this.styler.register({
+  host: {
+    ...
+  },
+  panel: {
+    border: '1px solid green',
+    $states: {
+      size: {
+        small: {
+          padding: 2,
+        },
+        medium: {
+          padding: 4,
+        },
+        large: {
+          padding: 8,
+        },
+        $default: 'medium',
+      },
+      ...
+    }
+  },
+  ...
+});
+```
+
+Set state via service:
+
+```typescript
+this.styler.setState('panel', {size: 'small'});
+```
+
+Or set state with `styler` directive:
+
+```html
+<div [styler]="['panel', {size: 'small'}]"></div>
+```
+
 ### Move styles to a separate file
-
-TBD
-
-### Component state styling
 
 TBD

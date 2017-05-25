@@ -16,3 +16,7 @@ export function clone(obj: any) {
 
   return temp;
 }
+
+export function isString(x: any): x is string {
+  return typeof x === "string";
+}

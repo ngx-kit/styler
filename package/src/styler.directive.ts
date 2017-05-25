@@ -10,7 +10,9 @@ import { isString } from './utils';
 export class StylerDirective {
 
   @Input() set styler(selector: string | DirectiveSelector) {
-    if (isString(selector)) {
+    if (!selector) {
+      this.elementName = null;
+    } else if (isString(selector)) {
       this.elementName = selector;
     } else {
       // @todo validate selector
@@ -25,7 +27,7 @@ export class StylerDirective {
         : null;
   }
 
-  private elementName: string;
+  private elementName: string | null = null;
 
   constructor(private stylerService: StylerService) {
   }

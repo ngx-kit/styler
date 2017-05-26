@@ -2,6 +2,8 @@
 
 Angular Typestyle integration. Write CSS in TypeScript.
 
+Currently in a deep beta!
+
 ## Install
 
 `npm install @ngx-kit/styler typestyle --save`

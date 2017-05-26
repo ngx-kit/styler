@@ -37,14 +37,20 @@ styler.register({
     background: 'red',
     color: 'white',
     $states: {
-      size: {
+      size: [{
         s: {
           padding: 2,
         },
         l: {
           padding: 16,
         }
-      }
+      }],
+      routerLinkActive: {
+        fontWeight: 600,
+      },
+      otherSingleState: {
+        background: 'red',
+      },
     }
   }
 });
@@ -72,6 +78,6 @@ styler.register({
   }
 });
 
-styler.getClass('host');
+//styler.getClass('host');
 
 styler.setState('host', {size: 's'});

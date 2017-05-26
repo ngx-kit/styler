@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 import { media, style as s } from 'typestyle';
 
 import { Element, RegistrationDef, State, ElementDef, StateDef, StateSetter, Style } from './interfaces';
-import { isDefined } from '@angular/compiler/src/util';
+import { StylerUnit } from './styler_unit';
 
 /**
- * @todo interfaces!!
- * @todo add (!replace) styles on additional registrations (or add upgrade methods)
  * @todo optimize & add cache
  * @todo logger (debugger)
+ * @todo units register
  */
 
 @Injectable()
@@ -16,11 +15,12 @@ export class StylerService {
 
   elements: Element[] = [];
 
+  private hostUnit: StylerUnit;
+
   register(def: RegistrationDef): void {
     for (const elementName in def) {
       this.registerElement(elementName, def[elementName]);
     }
-//    console.log('reg def', def, this.elements);
   }
 
   registerElement(name: string, def: ElementDef): void {
@@ -30,72 +30,103 @@ export class StylerService {
     // reg states
     if (def.$states) {
       for (const stateName in def.$states) {
-        this.registerState(name, stateName, def.$states[stateName]);
+        this.registerState(name, stateName, def.$states[stateName] as StateDef);
       }
     }
   }
 
-  registerState(elementName: string, name: string, def: StateDef): void {
+  registerState(elementName: string, name: string, rawDef: StateDef): void {
     const state = this.ensureState(elementName, name);
     // overwrite values and styles
-    const valuesDef = this.getStateDefValues(def);
-    for (const value in valuesDef) {
-      const existStyle = state.values.find(v => v.value === value);
+    if (Array.isArray(rawDef)) {
+      // multi state definition
+      const def = rawDef[0];
+      const valuesDef = this.getStateDefValues(def);
+      for (const value in valuesDef) {
+        const existStyle = state.values.find(v => v.value === value);
+        if (existStyle) {
+          existStyle.style = {...existStyle.style, ...valuesDef[value]};
+        } else {
+          state.values.push({
+            value,
+            style: valuesDef[value],
+          });
+        }
+      }
+      // @todo check value definition
+      state.currentValue = def.$default || null;
+    } else {
+      // single state definition
+      const existStyle = state.values.find(v => v.value === true);
       if (existStyle) {
-        existStyle.style = {...existStyle.style, ...valuesDef[value]};
+        existStyle.style = {...existStyle.style, ...rawDef};
       } else {
         state.values.push({
-          value,
-          style: valuesDef[value],
+          value: true,
+          style: rawDef,
         });
       }
+      state.currentValue = false;
     }
-    // @todo check value definition
-    state.currentValue = def.$default || null;
   }
 
-  getHostClass(): string {
-    return this.getClass('host');
-  }
-
-  getClass(elementName: string): string {
-    const element = this.elements.find(e => e.name === elementName);
-    if (element) {
-      const base = element.style;
-      // merge with state styles
-      const merged = element.states
-          .filter(s => s.currentValue)
-          .map(s => {
-            const value = s.values.find(v => v.value === s.currentValue);
+  getClass(elementName: string, state: StateSetter): string {
+    const element = this.getElement(elementName);
+    const base = element.style;
+    // merge with state styles
+    const merged = element.states
+        .map(s => {
+          const current = state[s.name];
+          if (current) {
+            const value = s.values.find(v => v.value === current);
             return value
                 ? value.style
                 : {};
-          })
-          .reduce((c, s) => {
-            return {...c, ...s};
-          }, base);
-//      console.log('lets trnslp', elementName, base, merged);
-      // get className (by typestyle)
-      return this.transpile(merged);
-    } else {
-      throw new Error(`Styler::getClass: element "${elementName} not registered!"`);
-    }
+          } else {
+            return {};
+          }
+        })
+        .reduce((c, s) => {
+          return {...c, ...s};
+        }, base);
+    // get className (by typestyle)
+    return this.transpile(merged);
   }
 
-  setState(elementName: string, setter: StateSetter): void {
-    const element = this.elements.find(e => e.name === elementName);
-    if (element) {
-      for (const stateName in setter) {
-        const state = element.states.find(s => s.name === stateName);
-        if (state) {
-          state.currentValue = setter[stateName];
-        } else {
-          throw new Error(`Styler::setState: state "${stateName}" for element "${elementName}" not registered!`);
-        }
-      }
-    } else {
-      throw new Error(`Styler::setState: element "${elementName}" not registered!`);
+  getHostClass(): string {
+    const hostUnit = this.getHostUnit();
+    return hostUnit.getClass();
+  }
+
+  getHostUnit(): StylerUnit {
+    if (!this.hostUnit) {
+      this.hostUnit = this.createUnit('host');
     }
+    return this.hostUnit;
+  }
+
+//  setState(elementName: string, setter: StateSetter): void {
+//    const element = this.getElement(elementName);
+//    for (const stateName in setter) {
+//      const state = element.states.find(s => s.name === stateName);
+//      if (state) {
+//        state.currentValue = setter[stateName];
+//      } else {
+//        throw new Error(`Styler::setState: state "${stateName}" for element "${elementName}" not registered!`);
+//      }
+//    }
+//  }
+
+  hasState(elementName: string, name: string): boolean {
+    const element = this.getElement(elementName);
+    return !!element.states.find(s => s.name === name);
+  }
+
+  createUnit(elementName: string) {
+    // @todo validate elementName
+    const unit = new StylerUnit(this, elementName);
+    unit.setState(this.getDefaultStates(elementName));
+    return unit;
   }
 
   /**
@@ -123,22 +154,18 @@ export class StylerService {
    * Find or create for element in store.
    */
   private ensureState(elementName: string, name: string): State {
-    const element = this.elements.find(e => e.name === elementName);
-    if (element) {
-      const state = element.states.find(s => s.name === name);
-      if (state) {
-        return state;
-      } else {
-        const newState = {
-          name,
-          values: [],
-          currentValue: null,
-        };
-        element.states.push(newState);
-        return newState;
-      }
+    const element = this.getElement(elementName);
+    const state = element.states.find(s => s.name === name);
+    if (state) {
+      return state;
     } else {
-      throw new Error(`Styler: Element "${elementName}" not registered!`);
+      const newState = {
+        name,
+        values: [],
+        currentValue: null,
+      };
+      element.states.push(newState);
+      return newState;
     }
   }
 
@@ -168,6 +195,23 @@ export class StylerService {
           obj[key] = raw[key];
           return obj;
         }, {});
+  }
+
+  private getDefaultStates(elementName: string): StateSetter {
+    const element = this.getElement(elementName);
+    return element.states.reduce((prev, curr) => {
+      prev[curr.name] = curr.currentValue;
+      return prev;
+    }, {});
+  }
+
+  private getElement(elementName: string): Element {
+    const element = this.elements.find(e => e.name === elementName);
+    if (element) {
+      return element;
+    } else {
+      throw new Error(`Styler: element "${elementName}" not registered!`);
+    }
   }
 
 }

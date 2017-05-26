@@ -20,3 +20,7 @@ export function clone(obj: any) {
 export function isString(x: any): x is string {
   return typeof x === "string";
 }
+
+export function isDefined(val: any): boolean {
+  return val !== null && val !== undefined;
+}

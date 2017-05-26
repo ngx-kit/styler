@@ -4,12 +4,13 @@ export interface Style extends types.NestedCSSProperties {
   $media?: [types.MediaQuery, types.NestedCSSProperties][];
 }
 
-export type StateValue = string | number | null;
+export type StateValue = string | number | boolean | null;
 
 export interface Element {
   name: string;
   style: Style;
   states: State[];
+  routerLinkActive?: Style;
 }
 
 export interface State {
@@ -18,6 +19,7 @@ export interface State {
     value: StateValue;
     style: Style;
   }[];
+  // @todo rename to defaultValue
   currentValue: StateValue;
 }
 
@@ -27,11 +29,14 @@ export interface StateSetter {
 
 export interface ElementDef extends Style {
   $states?: {
-    [key: string]: StateDef;
-  }
+    [key: string]: StateDef | undefined;
+    routerLinkActive?: Style;
+  };
 }
 
-export interface StateDef {
+export type StateDef = Style | [MultiStateDef];
+
+export interface MultiStateDef {
   [key: string]: Style | StateValue | undefined;
   $default?: StateValue;
 }

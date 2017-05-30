@@ -5,34 +5,34 @@ import {
 } from '@angular/core';
 import { Router, RouterLink, RouterLinkWithHref } from '@angular/router';
 
-import { StylerService } from './styler.service';
-import { DirectiveSelector } from './interfaces';
 import { isString } from './utils';
-import { StylerUnit } from './styler_unit';
+import { StylerElement } from './styler-element';
+import { StylerComponent } from './styler-component';
+import { DirectiveSelector } from './meta/def';
 
 @Directive({
   selector: '[styler]'
 })
 export class StylerDirective implements OnChanges, OnInit, AfterViewInit {
 
-  private unit: StylerUnit;
+  private element: StylerElement;
 
   @Input() set styler(selector: string | DirectiveSelector) {
     if (selector) {
       // @todo validate selector
-      if (!this.unit) {
+      if (!this.element) {
         const elementName = isString(selector) ? selector : selector[0];
-        this.unit = this.stylerService.createUnit(elementName);
+        this.element = this.component.createElement(elementName);
       }
       if (!isString(selector)) {
-        this.unit.setState(selector[1]);
+        this.element.state = selector[1];
       }
     }
   }
 
-  @HostBinding('class') get hostClass(): string | null {
-    return this.unit
-        ? this.unit.getClass()
+  @HostBinding('attr.sid') get sid(): string | null {
+    return this.element
+        ? this.element.sid
         : null;
   }
 
@@ -41,7 +41,7 @@ export class StylerDirective implements OnChanges, OnInit, AfterViewInit {
 
   private elementName: string | null = null;
 
-  constructor(private stylerService: StylerService,
+  constructor(private component: StylerComponent,
               @Optional() private router: Router,
               @Optional() private routerLink: RouterLink) {
   }
@@ -58,14 +58,13 @@ export class StylerDirective implements OnChanges, OnInit, AfterViewInit {
   }
 
   private update() {
-    console.log('UPD', this.routerLink, this.links, this.linksWithHrefs);
     if (this.router &&
         (this.links || this.linksWithHrefs) &&
-        this.unit &&
-        this.unit.hasState('routerLinkActive')) {
+        this.element &&
+        this.element.hasState('routerLinkActive')) {
       const isActive = this.hasActiveLinks();
-      console.log('isAct', this.elementName, this.unit.hasState('routerLinkActive'), isActive);
-      this.unit.setState({routerLinkActive: isActive});
+      console.log('isAct', this.elementName, this.element.hasState('routerLinkActive'), isActive);
+      this.element.state = {routerLinkActive: isActive};
     }
   }
 

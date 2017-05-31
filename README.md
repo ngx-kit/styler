@@ -18,9 +18,11 @@ import { StylerModule } from '@ngx-kit/styler';
 @NgModule({
   imports: [
       ...
-      StylerModule,
+      StylerModule.forRoot(),
 ...
 ```
+
+Use import with `.forRoot()` only once on the top level.
 
 ### Add styles to component
 
@@ -28,9 +30,9 @@ import { StylerModule } from '@ngx-kit/styler';
 ...
 @Component({
   ...
-  viewProviders: [StylerService]
+  viewProviders: [StylerComponent]
   ...
-  constructor(private styler: StylerService) {
+  constructor(private styler: StylerComponent) {
     this.styler.register({
       wrapper: {
         background: '#ffffff',
@@ -59,11 +61,11 @@ import { StylerModule } from '@ngx-kit/styler';
 
 ```typescript
   ...
-  @HostBinding('class') get hostClass() {
-    return this.styler.getHostClass();
+  @HostBinding('attr.sid') get sid() {
+    return this.styler.host.sid;
   };
   ...
-  constructor(private styler: StylerService) {
+  constructor(private styler: StylerComponent) {
     this.styler.register({
       host: {
         border: '1px solid green',
@@ -120,10 +122,10 @@ this.styler.register({
 });
 ```
 
-Set state via service:
+Set state via service for host:
 
 ```typescript
-this.styler.setState('panel', {size: 'small'});
+this.styler.host.applyState({size: 'small'});
 ```
 
 Or set state with `styler` directive:

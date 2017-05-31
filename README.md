@@ -6,7 +6,7 @@ Currently in a deep beta!
 
 ## Install
 
-`npm install @ngx-kit/styler typestyle --save`
+`npm install @ngx-kit/styler --save`
 
 ## Usage
 

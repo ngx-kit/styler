@@ -3,13 +3,15 @@ import { Injectable } from '@angular/core';
 import { StylerCompilerUnit } from './compiler/compiler-unit';
 import { StateSetter } from './meta/state';
 import { StylerSchema } from './styler-schema';
+import { StylerComponent } from './styler-component';
 
 @Injectable()
 export class StylerElement {
 
   private _state: StateSetter = {};
 
-  constructor(private schema: StylerSchema,
+  constructor(private component: StylerComponent,
+              private schema: StylerSchema,
               private unit: StylerCompilerUnit,
               private elementName: string) {
     this._state = this.schema.getDefaultStates(this.elementName);
@@ -44,6 +46,7 @@ export class StylerElement {
 
   private update() {
     this.unit.style = this.schema.compile(this.elementName, this._state);
+    this.component.render();
   }
 
 }

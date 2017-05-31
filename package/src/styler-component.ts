@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 
 import { StylerElement } from './styler-element';
 import { RegistrationDef } from './meta/def';
 import { StylerCompilerService } from './compiler/compiler.service';
 import { StylerSchema } from './styler-schema';
+import { componentStyle } from './meta/tokens';
+import { ComponentStyle } from './meta/component';
 
 /**
  * @todo optimize & add cache
@@ -16,8 +18,13 @@ export class StylerComponent {
   schema: StylerSchema;
   elements: StylerElement[] = [];
 
-  constructor(private compiler: StylerCompilerService) {
+  constructor(private compiler: StylerCompilerService,
+              @Optional() @Inject(componentStyle) private componentStyle: ComponentStyle) {
     this.schema = new StylerSchema();
+    console.log('CMP-STL', this.componentStyle);
+    if (this.componentStyle) {
+      this.register(this.componentStyle.getStyles());
+    }
   }
 
   register(def: RegistrationDef): void {
@@ -36,7 +43,7 @@ export class StylerComponent {
   createElement(elementName: string) {
     // @todo validate elementName
     const compilerUnit = this.compiler.create();
-    const element = new StylerElement(this.schema, compilerUnit, elementName);
+    const element = new StylerElement(this, this.schema, compilerUnit, elementName);
     this.elements.push(element);
     return element;
   }

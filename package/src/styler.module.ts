@@ -1,11 +1,12 @@
-import { ModuleWithProviders, NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule, Provider } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { StylerDirective } from './styler.directive';
 import { StylerCompilerService } from './compiler/compiler.service';
 import { StylerDefaultHashService } from './compiler/default-hash.service';
-import { stylerHash } from './meta/tokens';
+import { componentStyle, stylerHash } from './meta/tokens';
 import { StylerService } from './styler.service';
+import { StylerComponent } from './styler-component';
 
 const exported = [
   StylerDirective,
@@ -37,6 +38,16 @@ export class StylerModule {
         },
       ]
     };
+  }
+
+  static forComponent(componentStyleClass: any): Provider[] {
+    return [
+      {
+        provide: componentStyle,
+        useClass: componentStyleClass,
+      },
+      StylerComponent,
+    ];
   }
 
 }

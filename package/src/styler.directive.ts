@@ -1,7 +1,5 @@
 import {
-  AfterViewInit,
-  ContentChildren, Directive, HostBinding, Input, OnChanges, OnInit, Optional,
-  QueryList
+  AfterViewInit, ContentChildren, Directive, ElementRef, Input, OnChanges, OnInit, Optional, QueryList, Renderer2
 } from '@angular/core';
 import { Router, RouterLink, RouterLinkWithHref } from '@angular/router';
 
@@ -16,6 +14,7 @@ import { DirectiveSelector } from './meta/def';
 export class StylerDirective implements OnChanges, OnInit, AfterViewInit {
 
   private element: StylerElement;
+  private sid: string;
 
   @Input() set styler(selector: string | DirectiveSelector) {
     if (selector) {
@@ -30,20 +29,15 @@ export class StylerDirective implements OnChanges, OnInit, AfterViewInit {
     }
   }
 
-  @HostBinding('attr.sid') get sid(): string | null {
-    return this.element
-        ? this.element.sid
-        : null;
-  }
-
   @ContentChildren(RouterLink, {descendants: true}) links: QueryList<RouterLink>;
   @ContentChildren(RouterLinkWithHref, {descendants: true}) linksWithHrefs: QueryList<RouterLinkWithHref>;
 
   private elementName: string | null = null;
 
   constructor(private component: StylerComponent,
-              @Optional() private router: Router,
-              @Optional() private routerLink: RouterLink) {
+              private el: ElementRef,
+              private renderer: Renderer2,
+              @Optional() private router: Router) {
   }
 
   ngOnChanges() {
@@ -58,12 +52,16 @@ export class StylerDirective implements OnChanges, OnInit, AfterViewInit {
   }
 
   private update() {
+    this.checkRouterLink();
+    this.updateSid();
+  }
+
+  private checkRouterLink() {
     if (this.router &&
         (this.links || this.linksWithHrefs) &&
         this.element &&
         this.element.hasState('routerLinkActive')) {
       const isActive = this.hasActiveLinks();
-      console.log('isAct', this.elementName, this.element.hasState('routerLinkActive'), isActive);
       this.element.state = {routerLinkActive: isActive};
     }
   }
@@ -76,6 +74,17 @@ export class StylerDirective implements OnChanges, OnInit, AfterViewInit {
   private isLinkActive(router: Router): (link: (RouterLink | RouterLinkWithHref)) => boolean {
     return (link: RouterLink | RouterLinkWithHref) =>
         router.isActive(link.urlTree, true);
+  }
+
+  private updateSid() {
+    // check if changed
+    if (this.sid !== this.element.sid) {
+      // remove prev
+      this.renderer.removeAttribute(this.el.nativeElement, `sid-${this.sid}`);
+      // add new
+      this.sid = this.element.sid;
+      this.renderer.setAttribute(this.el.nativeElement, `sid-${this.sid}`, '');
+    }
   }
 
 }

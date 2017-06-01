@@ -35,7 +35,7 @@ export class StylerCompilerService {
       const props = this.compileProps(unit.style);
       const hash = this.hash.hash(props);
       if (!hashes.includes(hash)) {
-        css = `${css}[${this.attr}="${hash}"]{${props}}`;
+        css = `${css}[${this.attr}="${hash}"],[${this.attr}-${hash}]{${props}}`;
         hashes.push(hash);
       }
       unit.hash = hash;

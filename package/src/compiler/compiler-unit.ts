@@ -1,16 +1,17 @@
 import { Style } from '../meta/style';
+import { StyleDef } from '../meta/def';
 
 export class StylerCompilerUnit {
 
-  private _style: Style;
+  private _style: StyleDef;
   private _hash: string;
   private _selector: string;
 
-  set style(style: Style) {
+  set style(style: StyleDef) {
     this._style = style;
   }
 
-  get style(): Style {
+  get style(): StyleDef {
     return this._style;
   }
 

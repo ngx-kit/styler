@@ -1,7 +1,9 @@
 import { Style } from './style';
 import { StateSetter, StateValue } from './state';
+import { NestedCSSSelectors } from './css';
 
 export interface StyleDef extends Style {
+  $nest?: NestedCSSSelectors<Style>;
 //  $media?: [types.MediaQuery, types.NestedCSSProperties][];
 }
 

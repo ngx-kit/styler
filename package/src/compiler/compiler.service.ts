@@ -5,7 +5,7 @@ import { StylerCompilerUnit } from './compiler-unit';
 import { Style } from '../meta/style';
 import { stylerHash } from '../meta/tokens';
 import { StylerHashService } from '../meta/hash';
-import { isString } from '../utils';
+import { isString, objectFilter } from '../utils';
 import { autoPx } from '../meta/compiler';
 
 @Injectable()
@@ -32,10 +32,23 @@ export class StylerCompilerService {
     const hashes: string[] = [];
     let css = '';
     this.units.forEach(unit => {
-      const props = this.compileProps(unit.style);
-      const hash = this.hash.hash(props);
+      // root
+      const compiled = [this.compileProps('',objectFilter(unit.style, ['$nest']))];
+      // nested
+      if (unit.style.$nest) {
+        for(const selector in unit.style.$nest) {
+          const styles = unit.style.$nest[selector];
+          if (styles) {
+            compiled.push(this.compileProps(selector, styles));
+          }
+        }
+      }
+      // gen hash
+      const hash = this.hash.hash(compiled.join());
+      // compile css
       if (!hashes.includes(hash)) {
-        css = `${css}[${this.attr}="${hash}"],[${this.attr}-${hash}]{${props}}`;
+        const selector = `[${this.attr}="${hash}"],[${this.attr}-${hash}]`;
+        css = compiled.reduce((prev, curr) => `${prev}${selector}${curr}`, css);
         hashes.push(hash);
       }
       unit.hash = hash;
@@ -64,8 +77,8 @@ export class StylerCompilerService {
         : null;
   }
 
-  private compileProps(style: Style): string {
-    let text = '';
+  private compileProps(selector: string, style: Style): string {
+    let compiled = '';
     for (const prop in style) {
       const rawValue = style[prop];
       let value = '';
@@ -74,9 +87,9 @@ export class StylerCompilerService {
       } else {
         value = rawValue;
       }
-      text = `${text}${this.hyphenate(prop)}:${value};`;
+      compiled += `${this.hyphenate(prop)}:${value};`;
     }
-    return text;
+    return `${selector.replace(/&/g, '')}{${compiled}}`;
   }
 
   private hyphenate(propertyName: string): string {

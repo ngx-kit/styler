@@ -1,4 +1,4 @@
-import { CSSProperties } from './css';
+import { CSSProperties, NestedCSSSelectors } from './css';
 
 export type RawCss = CSSProperties;
 

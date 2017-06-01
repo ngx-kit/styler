@@ -2440,3 +2440,63 @@ export interface CSSProperties {
   '-webkit-user-modify'?: CSSValueGeneral;
   '-webkit-writing-mode'?: CSSValueGeneral;
 }
+
+export type NestedCSSSelectors<T> = {
+  /** StateSchema selector */
+  '&:active'?: T;
+  '&:any'?: T;
+  '&:checked'?: T;
+  '&:default'?: T;
+  '&:disabled'?: T;
+  '&:empty'?: T;
+  '&:enabled'?: T;
+  '&:first'?: T;
+  '&:first-child'?: T;
+  '&:first-of-type'?: T;
+  '&:fullscreen'?: T;
+  '&:focus'?: T;
+  '&:hover'?: T;
+  '&:indeterminate'?: T;
+  '&:in-range'?: T;
+  '&:invalid'?: T;
+  '&:last-child'?: T;
+  '&:last-of-type'?: T;
+  '&:left'?: T;
+  '&:link'?: T;
+  '&:only-child'?: T;
+  '&:only-of-type'?: T;
+  '&:optional'?: T;
+  '&:out-of-range'?: T;
+  '&:read-only'?: T;
+  '&:read-write'?: T;
+  '&:required'?: T;
+  '&:right'?: T;
+  '&:root'?: T;
+  '&:scope'?: T;
+  '&:target'?: T;
+  '&:valid'?: T;
+  '&:visited'?: T;
+
+  /**
+   * Pseudo-elements
+   * https://developer.mozilla.org/en/docs/Web/CSS/Pseudo-elements
+   */
+  '&::after'?: T;
+  '&::before'?: T;
+  '&::first-letter'?: T;
+  '&::first-line'?: T;
+  '&::selection'?: T;
+  '&::backdrop'?: T;
+  '&::placeholder'?: T;
+  '&::marker'?: T;
+  '&::spelling-error'?: T;
+  '&::grammar-error'?: T;
+
+  /** Children */
+  '&>*'?: T;
+
+  /**
+   * Also cater for any other nested query you want
+   */
+  [selector: string]: T | undefined;
+};

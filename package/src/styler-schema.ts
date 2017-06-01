@@ -2,6 +2,7 @@ import { ElementDef, RegistrationDef, StateDef } from './meta/def';
 import { Style } from './meta/style';
 import { ElementSchema, StateSchema } from './meta/schema';
 import { StateSetter } from './meta/state';
+import { objectFilter } from './utils';
 
 export class StylerSchema {
 
@@ -138,20 +139,11 @@ export class StylerSchema {
   }
 
   private getElementDefStyle(def: ElementDef): Style {
-    return this.objectFilter(def, ['$states']);
+    return objectFilter(def, ['$states']);
   }
 
   private getStateDefValues(def: StateDef): Style {
-    return this.objectFilter(def, ['$default']);
-  }
-
-  private objectFilter(raw: any, filter: string[]): any {
-    return Object.keys(raw)
-        .filter(key => !filter.includes(key))
-        .reduce((obj, key) => {
-          obj[key] = raw[key];
-          return obj;
-        }, {});
+    return objectFilter(def, ['$default']);
   }
 
   private getElement(elementName: string): ElementSchema {

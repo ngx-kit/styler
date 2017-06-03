@@ -16,6 +16,7 @@ export class StylerDirective implements OnChanges, OnInit, AfterViewInit {
   private element: StylerElement;
   private sid: string;
 
+
   @Input() set styler(selector: string | DirectiveSelector) {
     if (selector) {
       // @todo validate selector

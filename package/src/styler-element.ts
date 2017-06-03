@@ -4,11 +4,13 @@ import { StylerCompilerUnit } from './compiler/compiler-unit';
 import { StateSetter } from './meta/state';
 import { StylerSchema } from './styler-schema';
 import { StylerComponent } from './styler-component';
+import set = Reflect.set;
 
 @Injectable()
 export class StylerElement {
 
   private _state: StateSetter = {};
+  private stateSize = 0;
 
   constructor(private component: StylerComponent,
               private schema: StylerSchema,
@@ -19,8 +21,10 @@ export class StylerElement {
   }
 
   set state(setter: StateSetter) {
-    this._state = {...setter};
-    this.update();
+    if (this.isChanged(setter)) {
+      this._state = {...setter};
+      this.update();
+    }
   }
 
   get sid(): string {
@@ -32,8 +36,11 @@ export class StylerElement {
   }
 
   applyState(setter: StateSetter): void {
-    this._state = {...this._state, ...setter};
-    this.update();
+    const newState = {...this._state, ...setter};
+    if (this.isChanged(newState)) {
+      this._state = newState;
+      this.update();
+    }
   }
 
   hasState(name: string): boolean {
@@ -45,8 +52,25 @@ export class StylerElement {
   }
 
   private update() {
+    // Util
+    this.stateSize = Object.keys(this._state).length;
+    // Update style
     this.unit.style = this.schema.compile(this.elementName, this._state);
+    // Render
     this.component.render();
+  }
+
+  private isChanged(newState: StateSetter): boolean {
+    if (Object.keys(newState).length === this.stateSize) {
+      for (const name in newState) {
+        if (newState[name] !== this._state[name]) {
+          return true;
+        }
+      }
+      return false;
+    } else {
+      return true;
+    }
   }
 
 }

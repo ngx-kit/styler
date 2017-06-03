@@ -2,6 +2,7 @@ export const autoPx = [
   'bottom',
   'height',
   'left',
+  'lineHeight',
   'margin',
   'maxHeight',
   'maxWidth',

@@ -75,6 +75,10 @@ Use import with `.forRoot()` only once on the top level.
     ...
 ```
 
+### Nested styles
+ 
+TBD
+
 ### Register media styles
 
 ```typescript
@@ -103,6 +107,7 @@ this.styler.register({
   panel: {
     border: '1px solid green',
     $states: {
+      // multi-state
       size: {
         small: {
           padding: 2,
@@ -114,6 +119,11 @@ this.styler.register({
           padding: 8,
         },
         $default: 'medium',
+      },
+      // bool-state
+      disabled: {
+        color: '#666',
+        background: '#999'
       },
       ...
     }
@@ -135,5 +145,13 @@ Or set state with `styler` directive:
 ```
 
 ### Move styles to a separate file
+
+TBD
+
+### Fallback styles
+
+TBD
+
+### Smart styles
 
 TBD

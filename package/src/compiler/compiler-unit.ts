@@ -1,4 +1,3 @@
-import { Style } from '../meta/style';
 import { StyleDef } from '../meta/def';
 
 export class StylerCompilerUnit {

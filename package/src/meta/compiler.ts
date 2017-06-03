@@ -1,2 +1,14 @@
-export const autoPx = ['top', 'right', 'bottom', 'left', 'width', 'height', 'padding', 'margin', 'maxWidth',
-  'minWidth', 'maxHeight', 'minHeight'];
+export const autoPx = [
+  'bottom',
+  'height',
+  'left',
+  'margin',
+  'maxHeight',
+  'maxWidth',
+  'minHeight',
+  'minWidth',
+  'padding',
+  'right',
+  'top',
+  'width',
+];

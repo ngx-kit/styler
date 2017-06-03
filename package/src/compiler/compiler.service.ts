@@ -79,17 +79,26 @@ export class StylerCompilerService {
 
   private compileProps(selector: string, style: Style): string {
     let compiled = '';
-    for (const prop in style) {
-      const rawValue = style[prop];
-      let value = '';
-      if (!isString(rawValue) && autoPx.includes(prop)) {
-        value = `${rawValue}px`;
+    for (const rawProp in style) {
+      const rawValue = style[rawProp];
+      const prop = this.hyphenate(rawProp);
+      if (Array.isArray(rawValue)) {
+        rawValue.forEach(subValue => compiled += this.compileSingleProp(prop, subValue));
       } else {
-        value = rawValue;
+        compiled += this.compileSingleProp(prop, rawValue);
       }
-      compiled += `${this.hyphenate(prop)}:${value};`;
     }
     return `${selector.replace(/&/g, '')}{${compiled}}`;
+  }
+
+  private compileSingleProp(prop: string, rawValue: string):string {
+    let value = '';
+    if (!isString(rawValue) && autoPx.includes(prop)) {
+      value = `${rawValue}px`;
+    } else {
+      value = rawValue;
+    }
+    return `${prop}:${value};`;
   }
 
   private hyphenate(propertyName: string): string {

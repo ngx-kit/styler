@@ -2,7 +2,7 @@ import { ElementDef, RegistrationDef, StateDef } from './meta/def';
 import { Style } from './meta/style';
 import { ElementSchema, StateSchema } from './meta/schema';
 import { StateSetter } from './meta/state';
-import { objectFilter } from './utils';
+import { objectFilter } from './utils/object-filter';
 
 export class StylerSchema {
 

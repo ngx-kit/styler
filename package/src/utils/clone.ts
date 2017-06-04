@@ -16,20 +16,3 @@ export function clone(obj: any) {
 
   return temp;
 }
-
-export function isString(x: any): x is string {
-  return typeof x === "string";
-}
-
-export function isDefined(val: any): boolean {
-  return val !== null && val !== undefined;
-}
-
-export function objectFilter(raw: any, filter: string[]): any {
-  return Object.keys(raw)
-      .filter(key => !filter.includes(key))
-      .reduce((obj, key) => {
-        obj[key] = raw[key];
-        return obj;
-      }, {});
-}

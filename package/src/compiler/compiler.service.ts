@@ -5,8 +5,9 @@ import { StylerCompilerUnit } from './compiler-unit';
 import { Style } from '../meta/style';
 import { stylerHash } from '../meta/tokens';
 import { StylerHashService } from '../meta/hash';
-import { isString, objectFilter } from '../utils';
 import { autoPx } from '../meta/compiler';
+import { objectFilter } from '../utils/object-filter';
+import { isString } from '../utils/is-string';
 
 @Injectable()
 export class StylerCompilerService {

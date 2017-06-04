@@ -1,6 +1,7 @@
 export * from './src/styler.directive';
 export * from './src/styler.module';
 export * from './src/styler.service';
+export * from './src/styler-color.service';
 export * from './src/styler-component';
 export * from './src/styler-element';
 export * from './src/styler-schema';

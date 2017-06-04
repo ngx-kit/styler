@@ -3,10 +3,10 @@ import {
 } from '@angular/core';
 import { Router, RouterLink, RouterLinkWithHref } from '@angular/router';
 
-import { isString } from './utils';
 import { StylerElement } from './styler-element';
 import { StylerComponent } from './styler-component';
 import { DirectiveSelector } from './meta/def';
+import { isString } from './utils/is-string';
 
 @Directive({
   selector: '[styler]'

@@ -159,3 +159,42 @@ TBD
 ### Mixins
 
 TBD
+
+## Services
+
+### StylerColorService
+
+Service for color manipulating.
+
+```ts
+import { StylerColorService } from '@ngx-kit/styler';
+...
+constructor(private color: StylerColorService) {
+}
+...
+background: this.darken(0.2, someColorVar),
+```
+
+* `adjustHue`
+* `complement`
+* `darken`
+* `desaturate`
+* `grayscale`
+* `hsl`
+* `hsla`
+* `invert`
+* `lighten`
+* `mix`
+* `opacify`
+* `rgb`
+* `rgba`
+* `saturate`
+* `setHue`
+* `setLightness`
+* `setSaturation`
+* `shade`
+* `tint`
+* `toColorString`
+* `transparentize`
+
+

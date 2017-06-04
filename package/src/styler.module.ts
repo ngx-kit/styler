@@ -7,6 +7,7 @@ import { StylerDefaultHashService } from './compiler/default-hash.service';
 import { componentStyle, stylerHash } from './meta/tokens';
 import { StylerService } from './styler.service';
 import { StylerComponent } from './styler-component';
+import { StylerColorService } from './styler-color.service';
 
 const exported = [
   StylerDirective,
@@ -32,6 +33,7 @@ export class StylerModule {
       providers: [
         StylerService,
         StylerCompilerService,
+        StylerColorService,
         {
           provide: stylerHash,
           useClass: StylerDefaultHashService,

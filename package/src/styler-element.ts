@@ -4,7 +4,6 @@ import { StylerCompilerUnit } from './compiler/compiler-unit';
 import { StateSetter } from './meta/state';
 import { StylerSchema } from './styler-schema';
 import { StylerComponent } from './styler-component';
-import set = Reflect.set;
 
 @Injectable()
 export class StylerElement {

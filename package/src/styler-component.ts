@@ -21,7 +21,6 @@ export class StylerComponent {
   constructor(private compiler: StylerCompilerService,
               @Optional() @Inject(componentStyle) private componentStyle: ComponentStyle) {
     this.schema = new StylerSchema();
-    console.log('CMP-STL', this.componentStyle);
     if (this.componentStyle) {
       this.register(this.componentStyle.getStyles());
     }
@@ -34,7 +33,6 @@ export class StylerComponent {
   get host(): StylerElement {
     let hostElement = this.elements.find(e => e.name === 'host');
     if (!hostElement) {
-      console.log('Create host');
       hostElement = this.createElement('host');
     }
     return hostElement;

@@ -12,6 +12,8 @@ import { isString } from '../utils/is-string';
 @Injectable()
 export class StylerCompilerService {
 
+  private debug = true;
+  private debugId = 0;
   private node: HTMLStyleElement;
   private units: StylerCompilerUnit[] = [];
 
@@ -29,7 +31,7 @@ export class StylerCompilerService {
     return unit;
   }
 
-  render(): void {
+  render(source?: string): void {
     const hashes: string[] = [];
     let css = '';
     this.units.forEach(unit => {
@@ -54,7 +56,22 @@ export class StylerCompilerService {
       }
       unit.hash = hash;
     });
+    if (this.debug) {
+      this.debugId++;
+      console.log(`[${this.debugId}] Styler::render(source:${source})`, {
+        units: this.units.length,
+        hashes: hashes.length,
+        css,
+      });
+    }
     this.setCss(css);
+  }
+
+  destroyUnit(unit: StylerCompilerUnit) {
+    const index = this.units.indexOf(unit);
+    if (index !== -1) {
+      this.units.splice(index, 1);
+    }
   }
 
   private setCss(css: string): void {

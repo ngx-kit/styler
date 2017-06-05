@@ -1,4 +1,4 @@
-import { Inject, Injectable, Optional } from '@angular/core';
+import { Inject, Injectable, OnDestroy, Optional } from '@angular/core';
 
 import { StylerElement } from './styler-element';
 import { RegistrationDef } from './meta/def';
@@ -6,6 +6,7 @@ import { StylerCompilerService } from './compiler/compiler.service';
 import { StylerSchema } from './styler-schema';
 import { componentStyle } from './meta/tokens';
 import { ComponentStyle } from './meta/component';
+import { StylerCompilerUnit } from './compiler/compiler-unit';
 
 /**
  * @todo optimize & add cache
@@ -13,7 +14,7 @@ import { ComponentStyle } from './meta/component';
  * @todo units register
  */
 @Injectable()
-export class StylerComponent {
+export class StylerComponent implements OnDestroy {
 
   schema: StylerSchema;
   elements: StylerElement[] = [];
@@ -24,6 +25,12 @@ export class StylerComponent {
     if (this.componentStyle) {
       this.register(this.componentStyle.getStyles());
     }
+  }
+
+  ngOnDestroy() {
+    this.elements.forEach(element => {
+      element.destroy();
+    });
   }
 
   register(def: RegistrationDef): void {
@@ -38,7 +45,7 @@ export class StylerComponent {
     return hostElement;
   }
 
-  createElement(elementName: string) {
+  createElement(elementName: string): StylerElement {
     // @todo validate elementName
     const compilerUnit = this.compiler.create();
     const element = new StylerElement(this, this.schema, compilerUnit, elementName);
@@ -46,14 +53,12 @@ export class StylerComponent {
     return element;
   }
 
-  destroy() {
-    this.elements.forEach(element => {
-      element.destroy();
-    });
+  render(source?: string): void {
+    this.compiler.render(source);
   }
 
-  render() {
-    this.compiler.render();
+  destroyUnit(unit: StylerCompilerUnit): void {
+    this.compiler.destroyUnit(unit);
   }
 
 }

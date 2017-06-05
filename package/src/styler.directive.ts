@@ -1,5 +1,6 @@
 import {
-  AfterViewInit, ContentChildren, Directive, ElementRef, Input, OnChanges, OnInit, Optional, QueryList, Renderer2
+  AfterViewInit, ContentChildren, Directive, ElementRef, Input, OnChanges,
+  OnDestroy, OnInit, Optional, QueryList, Renderer2
 } from '@angular/core';
 import { Router, RouterLink, RouterLinkWithHref } from '@angular/router';
 
@@ -11,7 +12,7 @@ import { isString } from './utils/is-string';
 @Directive({
   selector: '[styler]'
 })
-export class StylerDirective implements OnChanges, OnInit, AfterViewInit {
+export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewInit {
 
   private element: StylerElement;
   private sid: string;
@@ -49,6 +50,10 @@ export class StylerDirective implements OnChanges, OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.update();
+  }
+
+  ngOnDestroy() {
+    this.element.destroy();
   }
 
   private update() {

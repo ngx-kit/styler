@@ -17,14 +17,14 @@ export class StylerElement {
               private elementName: string) {
     this._state = this.schema.getDefaultStates(this.elementName);
     this.update();
-    this.component.render(`${this.elementName}.create`);
+    this.component.render(this.unit, `${this.elementName}.create`);
   }
 
   set state(setter: StateSetter) {
     if (this.isChanged(setter)) {
       this._state = {...setter};
       this.update();
-      this.component.render(`${this.elementName}.set_state`);
+      this.component.render(this.unit, `${this.elementName}.set_state`);
     }
   }
 
@@ -41,7 +41,7 @@ export class StylerElement {
     if (this.isChanged(newState)) {
       this._state = newState;
       this.update();
-      this.component.render(`${this.elementName}.applyState`);
+      this.component.render(this.unit, `${this.elementName}.applyState`);
     }
   }
 

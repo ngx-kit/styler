@@ -14,8 +14,11 @@ export class StylerCompilerService {
 
   private debug = true;
   private debugId = 0;
+
   private node: HTMLStyleElement;
   private units: StylerCompilerUnit[] = [];
+  private rendered: {hash: string, css: string}[] = [];
+  private hashes: string[] = [];
 
   // @todo move to DI
   private readonly attr = 'sid';
@@ -31,40 +34,30 @@ export class StylerCompilerService {
     return unit;
   }
 
-  render(source?: string): void {
-    const hashes: string[] = [];
-    let css = '';
+  render(unit?: StylerCompilerUnit, source?: string): void {
+    if (unit) {
+      // update passed unit
+      this.updateUnit(unit);
+    } else {
+      // update all units
+      this.updateAllUnits();
+    }
+    // gather hashes
+    this.hashes = [];
     this.units.forEach(unit => {
-      // root
-      const compiled = [this.compileProps('',objectFilter(unit.style, ['$nest']))];
-      // nested
-      if (unit.style.$nest) {
-        for(const selector in unit.style.$nest) {
-          const styles = unit.style.$nest[selector];
-          if (styles) {
-            compiled.push(this.compileProps(selector, styles));
-          }
-        }
+      if (this.hashes.includes(unit.hash) === false) {
+        this.hashes.push(unit.hash);
       }
-      // gen hash
-      const hash = this.hash.hash(compiled.join());
-      // compile css
-      if (!hashes.includes(hash)) {
-        const selector = `[${this.attr}="${hash}"],[${this.attr}-${hash}]`;
-        css = compiled.reduce((prev, curr) => `${prev}${selector}${curr}`, css);
-        hashes.push(hash);
-      }
-      unit.hash = hash;
     });
+    // render
+    this.renderCss();
+    // debug
     if (this.debug) {
-      this.debugId++;
-      console.log(`[${this.debugId}] Styler::render(source:${source})`, {
+      this.log(`render(source:${source})`, {
         units: this.units.length,
-        hashes: hashes.length,
-        css,
+        hashes: this.hashes.length,
       });
     }
-    this.setCss(css);
   }
 
   destroyUnit(unit: StylerCompilerUnit) {
@@ -72,6 +65,56 @@ export class StylerCompilerService {
     if (index !== -1) {
       this.units.splice(index, 1);
     }
+  }
+
+  private updateUnit(unit: StylerCompilerUnit): void {
+    // root
+    const compiled = [this.compileProps('', objectFilter(unit.style, ['$nest']))];
+    // nested
+    if (unit.style.$nest) {
+      for (const selector in unit.style.$nest) {
+        const styles = unit.style.$nest[selector];
+        if (styles) {
+          compiled.push(this.compileProps(selector, styles));
+        }
+      }
+    }
+    // gen hash
+    unit.hash = this.hash.hash(compiled.join());
+    // render css or get from cache
+    const rendered = this.rendered.find(r => r.hash === unit.hash);
+    if (!rendered) {
+      const selector = `[${this.attr}="${unit.hash}"],[${this.attr}-${unit.hash}]`;
+      unit.css = compiled.reduce((prev, curr) => `${prev}${selector}${curr}`, '');
+      // save to cache
+      this.rendered.push({hash: unit.hash, css: unit.css});
+    } else {
+      unit.css = rendered.css;
+    }
+  }
+
+  private updateAllUnits(): void {
+    this.units.forEach(unit => this.updateUnit(unit));
+    if (this.debug) {
+      this.log('updateAllUnits', {
+        units: this.units.length,
+      });
+    }
+  }
+
+  private renderCss(): void {
+    const css = this.hashes.reduce((prev, curr) => {
+      const localCss = this.rendered.find(r => r.hash === curr);
+      if (localCss && localCss.css) {
+        return `${prev}${localCss.css}`;
+      } else {
+        if (this.debug) {
+          this.log('rendered', this.rendered);
+        }
+        throw new Error(`Styler: local css for hash "${curr}" not found!`);
+      }
+    }, '');
+    this.setCss(css);
   }
 
   private setCss(css: string): void {
@@ -85,7 +128,7 @@ export class StylerCompilerService {
       head.appendChild(this.node);
     } else {
       // @todo non-browser work
-      throw new Error('Non-browser work is not supported yet.');
+      throw new Error('Styler: Non-browser work is not supported yet.');
     }
   }
 
@@ -95,6 +138,7 @@ export class StylerCompilerService {
         : null;
   }
 
+  // @todo it should be optimized
   private compileProps(selector: string, style: Style): string {
     let compiled = '';
     for (const rawProp in style) {
@@ -109,7 +153,7 @@ export class StylerCompilerService {
     return `${selector.replace(/&/g, '')}{${compiled}}`;
   }
 
-  private compileSingleProp(prop: string, rawValue: string):string {
+  private compileSingleProp(prop: string, rawValue: string): string {
     let value = '';
     if (!isString(rawValue) && autoPx.includes(prop)) {
       value = `${rawValue}px`;
@@ -124,6 +168,11 @@ export class StylerCompilerService {
         .replace(/([A-Z])/g, '-$1')
         .replace(/^ms-/, '-ms-') // Internet Explorer vendor prefix.
         .toLowerCase();
+  }
+
+  private log(...params: any[]) {
+    this.debugId++;
+    console.log(`[${this.debugId}] Styler >> `, ...params);
   }
 
 }

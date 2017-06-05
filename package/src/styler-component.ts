@@ -53,8 +53,8 @@ export class StylerComponent implements OnDestroy {
     return element;
   }
 
-  render(source?: string): void {
-    this.compiler.render(source);
+  render(unit: StylerCompilerUnit, source?: string): void {
+    this.compiler.render(unit, source);
   }
 
   destroyUnit(unit: StylerCompilerUnit): void {

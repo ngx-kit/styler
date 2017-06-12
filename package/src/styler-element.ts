@@ -20,7 +20,8 @@ export class StylerElement {
     this.component.render(this.unit, `${this.elementName}.create`);
   }
 
-  set state(setter: StateSetter) {
+  set state(setterRaw: StateSetter) {
+    const setter = setterRaw || {};
     if (this.isChanged(setter)) {
       this._state = {...setter};
       this.update();

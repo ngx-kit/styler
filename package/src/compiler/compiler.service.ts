@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
 
 import { StylerCompilerUnit } from './compiler-unit';
-import { CssPadding, CssSmartPadding, Style } from '../meta/style';
+import { CssSmartMargin, CssSmartPadding, Style } from '../meta/style';
 import { stylerHash } from '../meta/tokens';
 import { StylerHashService } from '../meta/hash';
 import { autoPx } from '../meta/compiler';
@@ -147,6 +147,8 @@ export class StylerCompilerService {
       // smart props
       if (prop === 'padding' && Array.isArray(rawValue)) {
         compiled += this.compileSingleProp(prop, this.compileSmartPaddingValue(rawValue as CssSmartPadding));
+      } else if (prop === 'margin' && Array.isArray(rawValue)) {
+        compiled += this.compileSingleProp(prop, this.compileSmartMarginValue(rawValue as CssSmartMargin));
       } else if (Array.isArray(rawValue)) {
         // fallback
         rawValue.forEach(subValue => compiled += this.compileSingleProp(prop, subValue));
@@ -158,6 +160,10 @@ export class StylerCompilerService {
   }
 
   private compileSmartPaddingValue(rawValue: CssSmartPadding): string {
+    return rawValue.map(v => `${v}px`).join(' ');
+  }
+
+  private compileSmartMarginValue(rawValue: CssSmartMargin): string {
     return rawValue.map(v => `${v}px`).join(' ');
   }
 

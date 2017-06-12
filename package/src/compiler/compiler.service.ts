@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
 
 import { StylerCompilerUnit } from './compiler-unit';
-import { Style } from '../meta/style';
+import { CssPadding, CssSmartPadding, Style } from '../meta/style';
 import { stylerHash } from '../meta/tokens';
 import { StylerHashService } from '../meta/hash';
 import { autoPx } from '../meta/compiler';
@@ -144,13 +144,21 @@ export class StylerCompilerService {
     for (const rawProp in style) {
       const rawValue = style[rawProp];
       const prop = this.hyphenate(rawProp);
-      if (Array.isArray(rawValue)) {
+      // smart props
+      if (prop === 'padding' && Array.isArray(rawValue)) {
+        compiled += this.compileSingleProp(prop, this.compileSmartPaddingValue(rawValue as CssSmartPadding));
+      } else if (Array.isArray(rawValue)) {
+        // fallback
         rawValue.forEach(subValue => compiled += this.compileSingleProp(prop, subValue));
       } else {
         compiled += this.compileSingleProp(prop, rawValue);
       }
     }
     return `${selector.replace(/&/g, '')}{${compiled}}`;
+  }
+
+  private compileSmartPaddingValue(rawValue: CssSmartPadding): string {
+    return rawValue.map(v => `${v}px`).join(' ');
   }
 
   private compileSingleProp(prop: string, rawValue: string): string {

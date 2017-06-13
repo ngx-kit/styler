@@ -11,6 +11,7 @@ import { isString } from '../utils/is-string';
 import { compilePadding } from './props/padding';
 import { processAutoPx } from '../helpers/process-auto-px';
 import { compileMargin } from './props/margin';
+import { compileBorder } from './props/border';
 
 @Injectable()
 export class StylerCompilerService {
@@ -152,6 +153,8 @@ export class StylerCompilerService {
         compiled += compilePadding(rawValue);
       } else if (prop === 'margin') {
         compiled += compileMargin(rawValue);
+      } else if (prop === 'border') {
+        compiled += compileBorder(rawValue);
       } else if (Array.isArray(rawValue)) {
         // fallback
         rawValue.forEach(subValue => compiled += this.compileSingleProp(prop, subValue));

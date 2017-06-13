@@ -1,14 +1,24 @@
-import { CSSProperties, NestedCSSSelectors } from './css';
+import {
+  CSSColorSet,
+  CSSLength,
+  CSSLineStyle,
+  CSSPercentage,
+  CSSProperties,
+  CSSValue,
+  NestedCSSSelectors
+} from './css';
 
 export type RawCss = CSSProperties;
 
 export interface Style extends RawCss {
   padding?: CssPadding,
+  margin?: CssMargin,
+  border?: CssBorder,
 }
 
 export type CssPadding = CssPaddingValue | CssPaddingSmart | CssPaddingProps;
 
-export type CssPaddingValue = number | string;
+export type CssPaddingValue = CSSLength;
 
 export type CssPaddingSmart = [CssPaddingValue, CssPaddingValue]
     | [CssPaddingValue, CssPaddingValue, CssPaddingValue]
@@ -23,7 +33,7 @@ export interface CssPaddingProps {
 
 export type CssMargin = CssMarginValue | CssMarginSmart | CssMarginProps;
 
-export type CssMarginValue = number | string;
+export type CssMarginValue = CSSLength;
 
 export type CssMarginSmart = [CssMarginValue, CssMarginValue]
     | [CssMarginValue, CssMarginValue, CssMarginValue]
@@ -34,4 +44,15 @@ export interface CssMarginProps {
   left?: CssMarginValue;
   right?: CssMarginValue;
   top?: CssMarginValue;
+}
+
+export type CssBorder = any | CssBorderSmart | CssBorderProps;
+
+export type CssBorderSmart = [CSSLength, CSSLineStyle, CSSColorSet];
+
+export interface CssBorderProps {
+  style: CSSLineStyle;
+  width: CSSLength | CSSPercentage;
+  color: CSSColorSet;
+  radius: CSSLength | CSSPercentage;
 }

@@ -2,12 +2,14 @@ import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
 
 import { StylerCompilerUnit } from './compiler-unit';
-import { CssSmartMargin, CssSmartPadding, Style } from '../meta/style';
+import { CssMarginSmart, Style } from '../meta/style';
 import { stylerHash } from '../meta/tokens';
 import { StylerHashService } from '../meta/hash';
-import { autoPx } from '../meta/compiler';
 import { objectFilter } from '../utils/object-filter';
+import { autoPx } from '../meta/compiler';
 import { isString } from '../utils/is-string';
+import { compilePadding } from './props/padding';
+import { processAutoPx } from '../helpers/process-auto-px';
 
 @Injectable()
 export class StylerCompilerService {
@@ -145,10 +147,10 @@ export class StylerCompilerService {
       const rawValue = style[rawProp];
       const prop = this.hyphenate(rawProp);
       // smart props
-      if (prop === 'padding' && Array.isArray(rawValue)) {
-        compiled += this.compileSingleProp(prop, this.compileSmartPaddingValue(rawValue as CssSmartPadding));
+      if (prop === 'padding') {
+        compiled += compilePadding(rawValue);
       } else if (prop === 'margin' && Array.isArray(rawValue)) {
-        compiled += this.compileSingleProp(prop, this.compileSmartMarginValue(rawValue as CssSmartMargin));
+        compiled += this.compileMarginSmartValue(rawValue as CssMarginSmart);
       } else if (Array.isArray(rawValue)) {
         // fallback
         rawValue.forEach(subValue => compiled += this.compileSingleProp(prop, subValue));
@@ -159,18 +161,15 @@ export class StylerCompilerService {
     return `${selector.replace(/&/g, '')}{${compiled}}`;
   }
 
-  private compileSmartPaddingValue(rawValue: CssSmartPadding): string {
-    return rawValue.map(v => `${v}px`).join(' ');
-  }
 
-  private compileSmartMarginValue(rawValue: CssSmartMargin): string {
-    return rawValue.map(v => `${v}px`).join(' ');
+  private compileMarginSmartValue(rawValue: CssMarginSmart): string {
+    return `margin:${rawValue.map(v => `${v}px`).join(' ')}`;
   }
 
   private compileSingleProp(prop: string, rawValue: string): string {
     let value = '';
     if (!isString(rawValue) && autoPx.includes(prop)) {
-      value = `${rawValue}px`;
+      value = processAutoPx(rawValue);
     } else {
       value = rawValue;
     }

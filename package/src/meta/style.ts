@@ -6,18 +6,25 @@ export interface Style extends RawCss {
   padding?: CssPadding,
 }
 
-export type CssPadding = CssPaddingValue | CssSmartPadding;
+export type CssPadding = CssPaddingValue | CssPaddingSmart | CssPaddingProps;
 
 export type CssPaddingValue = number | string;
 
-export type CssSmartPadding = [CssPaddingValue, CssPaddingValue]
+export type CssPaddingSmart = [CssPaddingValue, CssPaddingValue]
     | [CssPaddingValue, CssPaddingValue, CssPaddingValue]
     | [CssPaddingValue, CssPaddingValue, CssPaddingValue, CssPaddingValue];
 
-export type CssMargin = CssMarginValue | CssSmartMargin;
+export interface CssPaddingProps {
+  bottom?: CssPaddingValue;
+  left?: CssPaddingValue;
+  right?: CssPaddingValue;
+  top?: CssPaddingValue;
+}
+
+export type CssMargin = CssMarginValue | CssMarginSmart;
 
 export type CssMarginValue = number | string;
 
-export type CssSmartMargin = [CssMarginValue, CssMarginValue]
+export type CssMarginSmart = [CssMarginValue, CssMarginValue]
     | [CssMarginValue, CssMarginValue, CssMarginValue]
     | [CssMarginValue, CssMarginValue, CssMarginValue, CssMarginValue];

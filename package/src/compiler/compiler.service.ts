@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
 
 import { StylerCompilerUnit } from './compiler-unit';
-import { CssMarginSmart, Style } from '../meta/style';
+import { Style } from '../meta/style';
 import { stylerHash } from '../meta/tokens';
 import { StylerHashService } from '../meta/hash';
 import { objectFilter } from '../utils/object-filter';
@@ -10,6 +10,7 @@ import { autoPx } from '../meta/compiler';
 import { isString } from '../utils/is-string';
 import { compilePadding } from './props/padding';
 import { processAutoPx } from '../helpers/process-auto-px';
+import { compileMargin } from './props/margin';
 
 @Injectable()
 export class StylerCompilerService {
@@ -149,8 +150,8 @@ export class StylerCompilerService {
       // smart props
       if (prop === 'padding') {
         compiled += compilePadding(rawValue);
-      } else if (prop === 'margin' && Array.isArray(rawValue)) {
-        compiled += this.compileMarginSmartValue(rawValue as CssMarginSmart);
+      } else if (prop === 'margin') {
+        compiled += compileMargin(rawValue);
       } else if (Array.isArray(rawValue)) {
         // fallback
         rawValue.forEach(subValue => compiled += this.compileSingleProp(prop, subValue));
@@ -159,11 +160,6 @@ export class StylerCompilerService {
       }
     }
     return `${selector.replace(/&/g, '')}{${compiled}}`;
-  }
-
-
-  private compileMarginSmartValue(rawValue: CssMarginSmart): string {
-    return `margin:${rawValue.map(v => `${v}px`).join(' ')}`;
   }
 
   private compileSingleProp(prop: string, rawValue: string): string {

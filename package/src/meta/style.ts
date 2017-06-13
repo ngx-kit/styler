@@ -21,10 +21,17 @@ export interface CssPaddingProps {
   top?: CssPaddingValue;
 }
 
-export type CssMargin = CssMarginValue | CssMarginSmart;
+export type CssMargin = CssMarginValue | CssMarginSmart | CssMarginProps;
 
 export type CssMarginValue = number | string;
 
 export type CssMarginSmart = [CssMarginValue, CssMarginValue]
     | [CssMarginValue, CssMarginValue, CssMarginValue]
     | [CssMarginValue, CssMarginValue, CssMarginValue, CssMarginValue];
+
+export interface CssMarginProps {
+  bottom?: CssMarginValue;
+  left?: CssMarginValue;
+  right?: CssMarginValue;
+  top?: CssMarginValue;
+}

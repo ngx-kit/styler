@@ -58,8 +58,8 @@ export class StylerCompilerService {
     // debug
     if (this.debug) {
       this.log(`render(source:${source})`, {
-        units: this.units.length,
-        hashes: this.hashes.length,
+        units: this.units,
+        hashes: this.hashes,
       });
     }
   }

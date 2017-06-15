@@ -1,4 +1,4 @@
-import { Inject, Injectable, OnDestroy, Optional } from '@angular/core';
+import { Inject, Injectable, OnDestroy, Optional, Self } from '@angular/core';
 
 import { StylerElement } from './styler-element';
 import { RegistrationDef } from './meta/def';
@@ -20,7 +20,7 @@ export class StylerComponent implements OnDestroy {
   elements: StylerElement[] = [];
 
   constructor(private compiler: StylerCompilerService,
-              @Optional() @Inject(componentStyle) private componentStyle: ComponentStyle) {
+              @Self() @Optional() @Inject(componentStyle) private componentStyle: ComponentStyle) {
     this.schema = new StylerSchema();
     if (this.componentStyle) {
       this.register(this.componentStyle.getStyles());

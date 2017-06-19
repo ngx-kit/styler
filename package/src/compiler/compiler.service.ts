@@ -73,23 +73,32 @@ export class StylerCompilerService {
 
   private updateUnit(unit: StylerCompilerUnit): void {
     // root
-    const compiled = [this.compileProps('', objectFilter(unit.style, ['$nest']))];
+    const compiled = [{
+      selector: '',
+      props: this.compileProps(objectFilter(unit.style, ['$nest'])),
+    }];
     // nested
     if (unit.style.$nest) {
       for (const selector in unit.style.$nest) {
         const styles = unit.style.$nest[selector];
         if (styles) {
-          compiled.push(this.compileProps(selector, styles));
+          compiled.push({
+            selector: selector.replace(/&/g, ''),
+            props: this.compileProps(styles),
+          });
         }
       }
     }
     // gen hash
-    unit.hash = this.hash.hash(compiled.join());
+    unit.hash = this.hash.hash(compiled.map(c => c.selector + c.props).join());
     // render css or get from cache
     const rendered = this.rendered.find(r => r.hash === unit.hash);
     if (!rendered) {
-      const selector = `[${this.attr}="${unit.hash}"],[${this.attr}-${unit.hash}]`;
-      unit.css = compiled.reduce((prev, curr) => `${prev}${selector}${curr}`, '');
+      const attrSelector = `[${this.attr}-${unit.hash}]`;
+      const attrValueSelector = `[${this.attr}="${unit.hash}"]`;
+      unit.css = compiled.reduce((prev, curr) => {
+        return `${prev}${attrSelector}${curr.selector},${attrValueSelector}${curr.selector}{${curr.props}}`;
+      }, '');
       // save to cache
       this.rendered.push({hash: unit.hash, css: unit.css});
     } else {
@@ -143,7 +152,7 @@ export class StylerCompilerService {
   }
 
   // @todo it should be optimized
-  private compileProps(selector: string, style: Style): string {
+  private compileProps(style: Style): string {
     let compiled = '';
     for (const rawProp in style) {
       const rawValue = style[rawProp];
@@ -162,7 +171,7 @@ export class StylerCompilerService {
         compiled += this.compileSingleProp(prop, rawValue);
       }
     }
-    return `${selector.replace(/&/g, '')}{${compiled}}`;
+    return `${compiled}`;
   }
 
   private compileSingleProp(prop: string, rawValue: string): string {

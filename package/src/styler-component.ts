@@ -35,6 +35,9 @@ export class StylerComponent implements OnDestroy {
 
   register(def: RegistrationDef): void {
     this.schema.register(def);
+    this.elements.forEach(element => {
+      element.update();
+    });
   }
 
   get host(): StylerElement {

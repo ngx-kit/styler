@@ -110,7 +110,8 @@ export class StylerCompilerService {
     this.units.forEach(unit => this.updateUnit(unit));
     if (this.debug) {
       this.log('updateAllUnits', {
-        units: this.units.length,
+        units: this.units,
+        hashes: this.hashes,
       });
     }
   }

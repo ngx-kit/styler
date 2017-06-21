@@ -17,7 +17,6 @@ export class StylerElement {
               private elementName: string) {
     this._state = this.schema.getDefaultStates(this.elementName);
     this.update();
-    this.component.render(this.unit, `${this.elementName}.create`);
   }
 
   set state(setterRaw: StateSetter) {
@@ -25,7 +24,6 @@ export class StylerElement {
     if (this.isChanged(setter)) {
       this._state = {...setter};
       this.update();
-      this.component.render(this.unit, `${this.elementName}.set_state`);
     }
   }
 
@@ -42,7 +40,6 @@ export class StylerElement {
     if (this.isChanged(newState)) {
       this._state = newState;
       this.update();
-      this.component.render(this.unit, `${this.elementName}.applyState`);
     }
   }
 
@@ -54,11 +51,16 @@ export class StylerElement {
     this.component.destroyUnit(this.unit);
   }
 
-  private update() {
+  update() {
     // Util
     this.stateSize = Object.keys(this._state).length;
     // Update style
     this.unit.style = this.schema.compile(this.elementName, this._state);
+    this.render();
+  }
+
+  render() {
+    this.component.render(this.unit, `element:${this.elementName}.render`);
   }
 
   private isChanged(newState: StateSetter): boolean {

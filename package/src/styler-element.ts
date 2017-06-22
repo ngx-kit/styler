@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 
 import { StylerCompilerUnit } from './compiler/compiler-unit';
 import { StateSetter } from './meta/state';
-import { StylerSchema } from './styler-schema';
 import { StylerComponent } from './styler-component';
+import { StyleDef, StyleReactiveDef } from './meta/def';
 
 @Injectable()
 export class StylerElement {
@@ -12,10 +12,9 @@ export class StylerElement {
   private stateSize = 0;
 
   constructor(private component: StylerComponent,
-              private schema: StylerSchema,
+              private def: StyleDef | StyleReactiveDef,
               private unit: StylerCompilerUnit,
               private elementName: string) {
-    this._state = this.schema.getDefaultStates(this.elementName);
     this.update();
   }
 
@@ -43,10 +42,6 @@ export class StylerElement {
     }
   }
 
-  hasState(name: string): boolean {
-    return this.schema.hasState(this.elementName, name);
-  }
-
   destroy(): void {
     this.component.destroyUnit(this.unit);
   }
@@ -55,7 +50,7 @@ export class StylerElement {
     // Util
     this.stateSize = Object.keys(this._state).length;
     // Update style
-    this.unit.style = this.schema.compile(this.elementName, this._state);
+    this.unit.style = this.compile();
     this.render();
   }
 
@@ -73,6 +68,14 @@ export class StylerElement {
       return false;
     } else {
       return true;
+    }
+  }
+
+  private compile(): StyleDef {
+    if (typeof this.def === "function") {
+      return this.def(this._state);
+    } else {
+      return this.def;
     }
   }
 

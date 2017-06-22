@@ -5,7 +5,7 @@ import { StylerDirective } from './styler.directive';
 import { StylerCompilerService } from './compiler/compiler.service';
 import { StylerDefaultHashService } from './compiler/default-hash.service';
 import { componentStyle, stylerHash } from './meta/tokens';
-import { StylerService } from './styler.service';
+import { StylerDefService } from './styler-def.service';
 import { StylerComponent } from './styler-component';
 import { StylerColorService } from './styler-color.service';
 
@@ -31,8 +31,8 @@ export class StylerModule {
     return {
       ngModule: StylerModule,
       providers: [
-        StylerService,
         StylerCompilerService,
+        StylerDefService,
         StylerColorService,
         {
           provide: stylerHash,

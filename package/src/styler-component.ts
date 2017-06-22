@@ -1,9 +1,7 @@
 import { Inject, Injectable, OnDestroy, Optional, Self } from '@angular/core';
 
 import { StylerElement } from './styler-element';
-import { RegistrationDef } from './meta/def';
 import { StylerCompilerService } from './compiler/compiler.service';
-import { StylerSchema } from './styler-schema';
 import { componentStyle } from './meta/tokens';
 import { ComponentStyle } from './meta/component';
 import { StylerCompilerUnit } from './compiler/compiler-unit';
@@ -16,14 +14,13 @@ import { StylerCompilerUnit } from './compiler/compiler-unit';
 @Injectable()
 export class StylerComponent implements OnDestroy {
 
-  schema: StylerSchema;
+  style: ComponentStyle;
   elements: StylerElement[] = [];
 
   constructor(private compiler: StylerCompilerService,
               @Self() @Optional() @Inject(componentStyle) private componentStyle: ComponentStyle) {
-    this.schema = new StylerSchema();
     if (this.componentStyle) {
-      this.register(this.componentStyle.getStyles());
+      this.register(this.componentStyle);
     }
   }
 
@@ -33,8 +30,11 @@ export class StylerComponent implements OnDestroy {
     });
   }
 
-  register(def: RegistrationDef): void {
-    this.schema.register(def);
+  register(style: ComponentStyle): void {
+    if (this.style) {
+      throw new Error('Styler: Component style already registered!');
+    }
+    this.style = style;
     this.elements.forEach(element => {
       element.update();
     });
@@ -49,9 +49,16 @@ export class StylerComponent implements OnDestroy {
   }
 
   createElement(elementName: string): StylerElement {
-    // @todo validate elementName
+    if (!this.style[elementName]) {
+      throw new Error(`Styler: element with name "${elementName}" is not defined!`);
+    }
     const compilerUnit = this.compiler.create();
-    const element = new StylerElement(this, this.schema, compilerUnit, elementName);
+    // bind style to def function if needed
+    const def = typeof this.style[elementName] === 'function'
+        ? this.style[elementName].bind(this.style)
+        : this.style[elementName];
+    // create element
+    const element = new StylerElement(this, def, compilerUnit, elementName);
     this.elements.push(element);
     return element;
   }

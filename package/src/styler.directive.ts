@@ -9,6 +9,9 @@ import { StylerComponent } from './styler-component';
 import { DirectiveSelector } from './meta/def';
 import { isString } from './utils/is-string';
 
+/**
+ * @todo restore routerLinkActive handler
+ */
 @Directive({
   selector: '[styler]'
 })
@@ -62,13 +65,13 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
   }
 
   private checkRouterLink() {
-    if (this.router &&
-        (this.links || this.linksWithHrefs) &&
-        this.element &&
-        this.element.hasState('routerLinkActive')) {
-      const isActive = this.hasActiveLinks();
-      this.element.state = {routerLinkActive: isActive};
-    }
+//    if (this.router &&
+//        (this.links || this.linksWithHrefs) &&
+//        this.element &&
+//        this.element.hasState('routerLinkActive')) {
+//      const isActive = this.hasActiveLinks();
+//      this.element.state = {routerLinkActive: isActive};
+//    }
   }
 
   private hasActiveLinks(): boolean {

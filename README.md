@@ -100,33 +100,31 @@ this.styler.register({
 Define element states:
  
 ```typescript
+constructor(private def: StylerDefService)
+...
 this.styler.register({
   host: {
     ...
   },
-  panel: {
+  panel: (state) => {
     border: '1px solid green',
-    $states: {
-      // multi-state
-      size: {
-        small: {
-          padding: 2,
-        },
-        medium: {
-          padding: 4,
-        },
-        large: {
-          padding: 8,
-        },
-        $default: 'medium',
+    // multi-state
+    ...this.def.pick(state.size, {
+      small: {
+        padding: 2,
       },
-      // bool-state
-      disabled: {
-        color: '#666',
-        background: '#999'
+      medium: {
+        padding: 4,
       },
-      ...
-    }
+      large: {
+        padding: 8,
+      },
+    }, 'medium'),
+    // bool-state
+    ...this.def.toggle(state.disabled, {
+      color: '#666',
+      background: '#999'
+    }),
   },
   ...
 });

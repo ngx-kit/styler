@@ -1,5 +1,9 @@
 export const autoPx = [
   'border-radius',
+  'border-top-width',
+  'border-right-width',
+  'border-bottom-width',
+  'border-left-width',
   'bottom',
   'height',
   'left',

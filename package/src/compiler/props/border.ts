@@ -3,33 +3,38 @@ import { isObject } from '../../utils/is-object';
 import { processAutoPx } from '../../helpers/process-auto-px';
 import { isUndefined } from '../../utils/is-undefined';
 
-export function compileBorder(rawValue: CssBorder): string {
+/**
+ * @todo border-top, border-right, border-bottom, border-left
+ */
+
+export function compileBorder(rawValue: CssBorder, rawSide: string | null = null): string {
+  const side = rawSide ? `-${rawSide}` : '';
   if (Array.isArray(rawValue)) {
-    return compileBorderSmartValue(rawValue as CssBorderSmart);
+    return compileBorderSmartValue(rawValue as CssBorderSmart, side);
   } else if (isObject(rawValue)) {
-    return compileBorderPropsValue(rawValue);
+    return compileBorderPropsValue(rawValue, 'side');
   } else {
-    return `border:${rawValue};`;
+    return `border${side}:${rawValue};`;
   }
 }
 
-function compileBorderSmartValue(rawValue: CssBorderSmart): string {
-  return `border:${processAutoPx(rawValue[0])} ${rawValue[1]} ${rawValue[2]};`
+function compileBorderSmartValue(rawValue: CssBorderSmart, side: string): string {
+  return `border${side}:${processAutoPx(rawValue[0])} ${rawValue[1]} ${rawValue[2]};`
 }
 
-function compileBorderPropsValue(rawValue: CssBorderProps): string {
+function compileBorderPropsValue(rawValue: CssBorderProps, side: string): string {
   let compiled = '';
   if (!isUndefined(rawValue.color)) {
-    compiled += `border-color:${rawValue.color};`;
+    compiled += `border${side}-color:${rawValue.color};`;
   }
   if (!isUndefined(rawValue.style)) {
-    compiled += `border-style:${rawValue.style};`;
+    compiled += `border${side}-style:${rawValue.style};`;
   }
   if (!isUndefined(rawValue.radius)) {
-    compiled += `border-radius:${processAutoPx(rawValue.radius)};`;
+    compiled += `border${side}-radius:${processAutoPx(rawValue.radius)};`;
   }
   if (!isUndefined(rawValue.width)) {
-    compiled += `border-width:${processAutoPx(rawValue.width)};`;
+    compiled += `border${side}-width:${processAutoPx(rawValue.width)};`;
   }
   return compiled;
 }

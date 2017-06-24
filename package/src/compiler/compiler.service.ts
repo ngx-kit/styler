@@ -165,6 +165,14 @@ export class StylerCompilerService {
         compiled += compileMargin(rawValue);
       } else if (prop === 'border') {
         compiled += compileBorder(rawValue);
+      } else if (prop === 'border-top') {
+        compiled += compileBorder(rawValue, 'top');
+      } else if (prop === 'border-right') {
+        compiled += compileBorder(rawValue, 'right');
+      } else if (prop === 'border-bottom') {
+        compiled += compileBorder(rawValue, 'bottom');
+      } else if (prop === 'border-left') {
+        compiled += compileBorder(rawValue, 'left');
       } else if (Array.isArray(rawValue)) {
         // fallback
         rawValue.forEach(subValue => compiled += this.compileSingleProp(prop, subValue));

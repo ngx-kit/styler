@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 
-const config = require('./release.json');
+const config = require('./release.config.json');
 
 // Copy sources
 fs.copySync(path.resolve('package'), path.resolve('dist/package'));

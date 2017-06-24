@@ -15,7 +15,6 @@
     "@angular/compiler": "0.0.0-ANGULAR-PLACEHOLDER",
     "@angular/compiler-cli": "0.0.0-ANGULAR-PLACEHOLDER",
     "@angular/core": "0.0.0-ANGULAR-PLACEHOLDER",
-    "@angular/router": "0.0.0-ANGULAR-PLACEHOLDER",
-    "typestyle": "0.0.0-TYPESTYLE-PLACEHOLDER"
+    "@angular/router": "0.0.0-ANGULAR-PLACEHOLDER"
   }
 }

@@ -1,6 +1,6 @@
 # Angular Styler
 
-Angular Typestyle integration. Write CSS in TypeScript.
+Keep CSS in TypeScript.
 
 Currently in a deep beta!
 
@@ -77,7 +77,20 @@ Use import with `.forRoot()` only once on the top level.
 
 ### Nested styles
  
-TBD
+```typescript
+this.styler.register({
+  host: {
+    $nest: {
+      '&:hover': {
+        background: 'grey',
+      },
+      '& a': {
+        textDecoration: 'none',
+      },
+    },
+  },
+});
+```
 
 ### Register media styles
 
@@ -144,7 +157,65 @@ Or set state with `styler` directive:
 
 ### Move styles to a separate file
 
-TBD
+Provide styler view built-it module method:
+
+```typescript
+@Component({
+  ...
+  viewProviders: [StylerModule.forComponent(NameStyle)],
+```
+
+Define style injectable:
+
+```typescript
+import { Injectable } from '@angular/core';
+import { ComponentStyle, StylerDefService, StyleDef } from '@ngx-kit/styler';
+
+@Injectable()
+export class NameStyle implements ComponentStyle {
+  
+  constructor(private def: StylerDefService) {
+  }
+  
+  host(): StyleDef {
+    return {
+      display: 'block',
+    };
+  }
+  
+  wrapper(): StyleDef {
+    return {
+      background: '#ffffff',
+      color: 'red',
+    };
+  }
+  
+  // state handling
+  panel(state): StyleDef {
+    return {
+      border: '1px solid green',
+      // multi-state
+      ...this.def.pick(state.size, {
+        small: {
+          padding: 2,
+        },
+        medium: {
+          padding: 4,
+        },
+        large: {
+          padding: 8,
+        },
+      }, 'medium'),
+      // bool-state
+      ...this.def.toggle(state.disabled, {
+        color: '#666',
+        background: '#999'
+      }),
+    };
+  };
+  
+}
+```
 
 ### Fallback styles
 
@@ -152,7 +223,10 @@ TBD
 
 ### Smart styles
 
-TBD
+* `padding: [10, 20] => padding: '10px 20px'`
+* `padding: {top: 10, left: 30} => paddingTop: '10px', paddingLeft: '30px'`
+* `margin: [10, 20, 30] => padding: '10px 20px 30px'`
+* `border: [1, 'solid', 'blue] => border: '1px solid blue'`
 
 ### Mixins
 
@@ -160,7 +234,13 @@ TBD
 
 ## Services
 
-### StylerColorService
+### `StylerDefService`
+
+* `pick(state: string, styles, default?: string)` - returns styles[state|default] 
+* `toggle(state: boolean, styles)` - returns styles if state is true
+* `merge` - js deepMerge, needed if states have $nest props
+
+### `StylerColorService`
 
 Service for color manipulating.
 

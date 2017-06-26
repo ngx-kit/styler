@@ -19,10 +19,10 @@ export class StylerDefService {
     }
   }
 
-  toggle(state: boolean, styles: StyleDef): StyleDef {
+  toggle(state: boolean, styles: StyleDef, falseStyles?: StyleDef): StyleDef {
     return state
         ? styles
-        : {};
+        : falseStyles || {};
   }
 
   merge(chunks: StyleDef[]): StyleDef {

@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
-
 import { StylerCompilerUnit } from './compiler/compiler-unit';
+import { StyleDef, StyleReactiveDef } from './meta/def';
 import { StateSetter } from './meta/state';
 import { StylerComponent } from './styler-component';
-import { StyleDef, StyleReactiveDef } from './meta/def';
 
 @Injectable()
 export class StylerElement {
-
   private _state: StateSetter = {};
+
   private stateSize = 0;
 
   constructor(private component: StylerComponent,
@@ -18,20 +17,20 @@ export class StylerElement {
     this.update();
   }
 
-  set state(setterRaw: StateSetter) {
-    const setter = setterRaw || {};
-    if (this.isChanged(setter)) {
-      this._state = {...setter};
-      this.update();
-    }
+  get name(): string {
+    return this.elementName;
   }
 
   get sid(): string {
     return this.unit.hash;
   }
 
-  get name(): string {
-    return this.elementName;
+  set state(setterRaw: StateSetter) {
+    const setter = setterRaw || {};
+    if (this.isChanged(setter)) {
+      this._state = {...setter};
+      this.update();
+    }
   }
 
   applyState(setter: StateSetter): void {
@@ -46,6 +45,10 @@ export class StylerElement {
     this.component.destroyUnit(this.unit);
   }
 
+  render() {
+    this.component.render(this.unit, `element:${this.elementName}.render`);
+  }
+
   update() {
     // Util
     this.stateSize = Object.keys(this._state).length;
@@ -54,8 +57,12 @@ export class StylerElement {
     this.render();
   }
 
-  render() {
-    this.component.render(this.unit, `element:${this.elementName}.render`);
+  private compile(): StyleDef {
+    if (typeof this.def === "function") {
+      return this.def(this._state);
+    } else {
+      return this.def;
+    }
   }
 
   private isChanged(newState: StateSetter): boolean {
@@ -70,13 +77,4 @@ export class StylerElement {
       return true;
     }
   }
-
-  private compile(): StyleDef {
-    if (typeof this.def === "function") {
-      return this.def(this._state);
-    } else {
-      return this.def;
-    }
-  }
-
 }

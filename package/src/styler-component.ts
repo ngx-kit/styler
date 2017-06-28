@@ -1,10 +1,9 @@
 import { Inject, Injectable, OnDestroy, Optional, Self } from '@angular/core';
-
-import { StylerElement } from './styler-element';
-import { StylerCompilerService } from './compiler/compiler.service';
-import { componentStyle } from './meta/tokens';
-import { ComponentStyle } from './meta/component';
 import { StylerCompilerUnit } from './compiler/compiler-unit';
+import { StylerCompilerService } from './compiler/compiler.service';
+import { ComponentStyle } from './meta/component';
+import { componentStyle } from './meta/tokens';
+import { StylerElement } from './styler-element';
 
 /**
  * @todo optimize & add cache
@@ -13,9 +12,9 @@ import { StylerCompilerUnit } from './compiler/compiler-unit';
  */
 @Injectable()
 export class StylerComponent implements OnDestroy {
+  elements: StylerElement[] = [];
 
   style: ComponentStyle;
-  elements: StylerElement[] = [];
 
   constructor(private compiler: StylerCompilerService,
               @Self() @Optional() @Inject(componentStyle) private componentStyle: ComponentStyle) {
@@ -24,28 +23,18 @@ export class StylerComponent implements OnDestroy {
     }
   }
 
-  ngOnDestroy() {
-    this.elements.forEach(element => {
-      element.destroy();
-    });
-  }
-
-  register(style: ComponentStyle): void {
-    if (this.style) {
-      throw new Error('Styler: Component style already registered!');
-    }
-    this.style = style;
-    this.elements.forEach(element => {
-      element.update();
-    });
-  }
-
   get host(): StylerElement {
     let hostElement = this.elements.find(e => e.name === 'host');
     if (!hostElement) {
       hostElement = this.createElement('host');
     }
     return hostElement;
+  }
+
+  ngOnDestroy() {
+    this.elements.forEach(element => {
+      element.destroy();
+    });
   }
 
   createElement(elementName: string): StylerElement {
@@ -63,12 +52,21 @@ export class StylerComponent implements OnDestroy {
     return element;
   }
 
-  render(unit: StylerCompilerUnit, source?: string): void {
-    this.compiler.render(unit, source);
-  }
-
   destroyUnit(unit: StylerCompilerUnit): void {
     this.compiler.destroyUnit(unit);
   }
 
+  register(style: ComponentStyle): void {
+    if (this.style) {
+      throw new Error('Styler: Component style already registered!');
+    }
+    this.style = style;
+    this.elements.forEach(element => {
+      element.update();
+    });
+  }
+
+  render(unit: StylerCompilerUnit, source?: string): void {
+    this.compiler.render(unit, source);
+  }
 }

@@ -1,19 +1,17 @@
 import { Injectable } from '@angular/core';
-
 import { HslaColor, HslColor, RgbaColor, RgbColor } from './meta/color';
-import { parseToHsl } from './utils/color/parse-to-hsl';
-import { guard } from './utils/guard';
 import { hslToHex } from './utils/color/hsl-to-hex';
 import { hslToRgb } from './utils/color/hsl-to-rgb';
+import { isHsl, isHsla } from './utils/color/is-hsl';
+import { isRgb, isRgba } from './utils/color/is-rgb';
+import { numberToHex } from './utils/color/number-to-hex';
+import { parseToHsl } from './utils/color/parse-to-hsl';
 import { parseToRgb } from './utils/color/parse-to-rgb';
 import { reduceHexValue } from './utils/color/reduce-hex-value';
-import { numberToHex } from './utils/color/number-to-hex';
-import { isRgb, isRgba } from './utils/color/is-rgb';
-import { isHsl, isHsla } from './utils/color/is-hsl';
+import { guard } from './utils/guard';
 
 @Injectable()
 export class StylerColorService {
-
   /**
    * Changes the hue of the color. Hue is a number between 0 to 360. The first
    * argument for adjustHue is the amount of degrees the color is rotated along
@@ -30,7 +28,6 @@ export class StylerColorService {
       hue: (hslColor.hue + degree) % 360,
     });
   }
-
 
   /**
    * Returns the complement of the provided color. This is identical to adjustHue(180, <color>).
@@ -190,13 +187,11 @@ export class StylerColorService {
       ...parsedColor1,
       alpha: typeof parsedColor1['alpha'] === 'number' ? parsedColor1['alpha'] : 1,
     };
-
     const parsedColor2 = parseToRgb(otherColor);
     const color2 = {
       ...parsedColor2,
       alpha: typeof parsedColor2['alpha'] === 'number' ? parsedColor2['alpha'] : 1,
     };
-
     // The formular is copied from the original Sass implementation:
     // http://sass-lang.com/documentation/Sass/Script/Functions.html#mix-instance_method
     const alphaDelta = color1.alpha - color2.alpha;
@@ -205,14 +200,12 @@ export class StylerColorService {
     const z = (1 + (x * alphaDelta));
     const weight1 = ((y / z) + 1) / 2.0;
     const weight2 = 1 - weight1;
-
     const mixedColor = {
       red: Math.floor((color1.red * weight1) + (color2.red * weight2)),
       green: Math.floor((color1.green * weight1) + (color2.green * weight2)),
       blue: Math.floor((color1.blue * weight1) + (color2.blue * weight2)),
       alpha: color1.alpha + ((color2.alpha - color1.alpha) * (weight / 1.0)),
     };
-
     return this.rgba(mixedColor);
   }
 
@@ -230,8 +223,8 @@ export class StylerColorService {
     const colorWithAlpha = {
       ...parsedColor,
       alpha: guard(0, 1, (
-              (alpha * 100) + (amount * 100)
-          ) / 100),
+          (alpha * 100) + (amount * 100)
+      ) / 100),
     };
     return this.rgba(colorWithAlpha);
   }
@@ -417,10 +410,9 @@ export class StylerColorService {
     const colorWithAlpha = {
       ...parsedColor,
       alpha: guard(0, 1, (
-              (alpha * 100) - (amount * 100)
-          ) / 100),
+          (alpha * 100) - (amount * 100)
+      ) / 100),
     };
     return this.rgba(colorWithAlpha);
   }
-
 }

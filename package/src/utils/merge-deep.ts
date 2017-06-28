@@ -3,7 +3,6 @@ import { isObject } from './is-object';
 export function mergeDeep(target: any, ...sources: any[]): any {
   if (!sources.length) return target;
   const source = sources.shift();
-
   if (isObject(target) && isObject(source)) {
     for (const key in source) {
       if (isObject(source[key])) {
@@ -14,6 +13,5 @@ export function mergeDeep(target: any, ...sources: any[]): any {
       }
     }
   }
-
   return mergeDeep(target, ...sources);
 }

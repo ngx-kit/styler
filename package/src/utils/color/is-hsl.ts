@@ -7,7 +7,6 @@ export function isHsl(color: any): color is HslColor {
       typeof color.lightness === 'number' &&
       typeof color.alpha !== 'number';
 }
-
 export function isHsla(color: any): color is HslaColor {
   return typeof color === 'object' &&
       typeof color.hue === 'number' &&

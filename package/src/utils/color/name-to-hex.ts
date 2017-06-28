@@ -148,7 +148,6 @@ const namedColorMap = {
   'yellow': 'ff0',
   'yellowgreen': '9acd32',
 };
-
 /**
  * Checks if a string is a CSS named color and returns its equivalent hex value, otherwise returns the original color.
  * @private

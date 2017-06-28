@@ -1,6 +1,6 @@
-import { Style } from './style';
-import { StateSetter } from './state';
 import { NestedCSSSelectors } from './css';
+import { StateSetter } from './state';
+import { Style } from './style';
 
 export interface StyleDef extends Style {
   $nest?: NestedCSSSelectors<Style>;

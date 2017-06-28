@@ -1,7 +1,7 @@
+import { processAutoPx } from '../../helpers/process-auto-px';
 import { CssMargin, CssMarginProps, CssMarginSmart } from '../../meta/style';
 import { isObject } from '../../utils/is-object';
 import { isUndefined } from '../../utils/is-undefined';
-import { processAutoPx } from '../../helpers/process-auto-px';
 
 export function compileMargin(rawValue: CssMargin): string {
   if (Array.isArray(rawValue)) {
@@ -12,11 +12,9 @@ export function compileMargin(rawValue: CssMargin): string {
     return `margin:${processAutoPx(rawValue)};`;
   }
 }
-
 function compileMarginSmartValue(rawValue: CssMarginSmart): string {
   return `margin:${rawValue.map(processAutoPx).join(' ')};`;
 }
-
 function compileMarginPropsValue(rawValue: CssMarginProps): string {
   let compiled = '';
   if (!isUndefined(rawValue.bottom)) {

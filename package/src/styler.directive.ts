@@ -1,26 +1,47 @@
 import {
-  AfterViewInit, ContentChildren, Directive, ElementRef, Input, OnChanges,
-  OnDestroy, OnInit, Optional, QueryList, Renderer2
+  AfterViewInit,
+  ContentChildren,
+  Directive,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Optional,
+  QueryList,
+  Renderer2,
 } from '@angular/core';
 import { Router, RouterLink, RouterLinkWithHref } from '@angular/router';
-
-import { StylerElement } from './styler-element';
-import { StylerComponent } from './styler-component';
 import { DirectiveSelector } from './meta/def';
+import { StylerComponent } from './styler-component';
+import { StylerElement } from './styler-element';
 import { isString } from './utils/is-string';
 
 /**
  * @todo restore routerLinkActive handler
  */
 @Directive({
-  selector: '[styler]'
+  selector: '[styler]',
 })
 export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewInit {
+  @ContentChildren(RouterLink, {descendants: true}) links: QueryList<RouterLink>;
+
+  @ContentChildren(RouterLinkWithHref, {descendants: true}) linksWithHrefs: QueryList<RouterLinkWithHref>;
 
   private element: StylerElement;
+
+  private elementName: string | null = null;
+
   private sid: string;
 
-  @Input() set styler(selector: string | DirectiveSelector) {
+  constructor(private component: StylerComponent,
+              private el: ElementRef,
+              private renderer: Renderer2,
+              @Optional() private router: Router) {
+  }
+
+  @Input()
+  set styler(selector: string | DirectiveSelector) {
     if (selector) {
       // @todo validate selector
       if (!this.element) {
@@ -33,25 +54,11 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
     }
   }
 
-  @ContentChildren(RouterLink, {descendants: true}) links: QueryList<RouterLink>;
-  @ContentChildren(RouterLinkWithHref, {descendants: true}) linksWithHrefs: QueryList<RouterLinkWithHref>;
-
-  private elementName: string | null = null;
-
-  constructor(private component: StylerComponent,
-              private el: ElementRef,
-              private renderer: Renderer2,
-              @Optional() private router: Router) {
-  }
-
-  ngOnChanges() {
+  ngAfterViewInit() {
     this.update();
   }
 
-  ngOnInit() {
-  }
-
-  ngAfterViewInit() {
+  ngOnChanges() {
     this.update();
   }
 
@@ -59,9 +66,7 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
     this.element.destroy();
   }
 
-  private update() {
-    this.checkRouterLink();
-    this.updateSid();
+  ngOnInit() {
   }
 
   private checkRouterLink() {
@@ -84,6 +89,11 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
         router.isActive(link.urlTree, true);
   }
 
+  private update() {
+    this.checkRouterLink();
+    this.updateSid();
+  }
+
   private updateSid() {
     // check if changed
     if (this.sid !== this.element.sid) {
@@ -94,5 +104,4 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
       this.renderer.setAttribute(this.el.nativeElement, `sid-${this.sid}`, '');
     }
   }
-
 }

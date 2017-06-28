@@ -1,25 +1,25 @@
 export interface HslColor {
   hue: number;
-  saturation: number;
   lightness: number;
+  saturation: number;
 }
 
 export interface HslaColor {
-  hue: number;
-  saturation: number;
-  lightness: number;
   alpha: number;
+  hue: number;
+  lightness: number;
+  saturation: number;
 }
 
 export interface RgbColor {
-  red: number;
-  green: number;
   blue: number;
+  green: number;
+  red: number;
 }
 
 export interface RgbaColor {
-  red: number;
-  green: number;
-  blue: number;
   alpha: number;
+  blue: number;
+  green: number;
+  red: number;
 }

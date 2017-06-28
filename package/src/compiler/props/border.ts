@@ -1,6 +1,6 @@
+import { processAutoPx } from '../../helpers/process-auto-px';
 import { CssBorder, CssBorderProps, CssBorderSmart } from '../../meta/style';
 import { isObject } from '../../utils/is-object';
-import { processAutoPx } from '../../helpers/process-auto-px';
 import { isUndefined } from '../../utils/is-undefined';
 
 /**
@@ -17,11 +17,9 @@ export function compileBorder(rawValue: CssBorder, rawSide: string | null = null
     return `border${side}:${rawValue};`;
   }
 }
-
 function compileBorderSmartValue(rawValue: CssBorderSmart, side: string): string {
   return `border${side}:${processAutoPx(rawValue[0])} ${rawValue[1]} ${rawValue[2]};`
 }
-
 function compileBorderPropsValue(rawValue: CssBorderProps, side: string): string {
   let compiled = '';
   if (!isUndefined(rawValue.color)) {

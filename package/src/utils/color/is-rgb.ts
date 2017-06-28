@@ -7,7 +7,6 @@ export function isRgb(color: any): color is RgbColor {
       typeof color.blue === 'number' &&
       typeof color.alpha !== 'number';
 }
-
 export function isRgba(color: any): color is RgbaColor {
   return typeof color === 'object' &&
       typeof color.red === 'number' &&

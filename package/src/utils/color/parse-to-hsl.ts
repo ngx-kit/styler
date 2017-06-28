@@ -1,6 +1,6 @@
 import { HslaColor, HslColor } from '../../meta/color';
-import { rgbToHsl } from './rgb-to-hsl';
 import { parseToRgb } from './parse-to-rgb';
+import { rgbToHsl } from './rgb-to-hsl';
 
 /**
  * Returns an HslColor or HslaColor object. This utility function is only useful

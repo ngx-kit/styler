@@ -1,6 +1,6 @@
 import { RgbaColor, RgbColor } from '../../meta/color';
-import { nameToHex } from './name-to-hex';
 import { hslToRgb } from './hsl-to-rgb';
+import { nameToHex } from './name-to-hex';
 
 const hexRegex = /^#[a-fA-F0-9]{6}$/;
 const reducedHexRegex = /^#[a-fA-F0-9]{3}$/;
@@ -8,7 +8,6 @@ const rgbRegex = /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/;
 const rgbaRegex = /^rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*([-+]?[0-9]*[.]?[0-9]+)\s*\)$/;
 const hslRegex = /^hsl\(\s*(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*\)$/;
 const hslaRegex = /^hsla\(\s*(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*,\s*([-+]?[0-9]*[.]?[0-9]+)\s*\)$/;
-
 /**
  * Returns an RgbColor or RgbaColor object. This utility function is only useful
  * if want to extract a color component. With the color util `toColorString` you

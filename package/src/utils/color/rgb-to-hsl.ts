@@ -5,11 +5,9 @@ export function rgbToHsl(color: RgbColor | RgbaColor): HslColor | HslaColor {
   const red = color.red / 255;
   const green = color.green / 255;
   const blue = color.blue / 255;
-
   const max = Math.max(red, green, blue);
   const min = Math.min(red, green, blue);
   const lightness = (max + min) / 2;
-
   if (max === min) {
     // achromatic
     if (color['alpha'] !== undefined) {
@@ -18,7 +16,6 @@ export function rgbToHsl(color: RgbColor | RgbaColor): HslColor | HslaColor {
       return {hue: 0, saturation: 0, lightness}
     }
   }
-
   let hue;
   const delta = max - min;
   const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
@@ -33,7 +30,6 @@ export function rgbToHsl(color: RgbColor | RgbaColor): HslColor | HslaColor {
       hue = ((red - green) / delta) + 4;
       break;
   }
-
   hue *= 60;
   if (color['alpha'] !== undefined) {
     return {hue, saturation, lightness, alpha: color['alpha']}

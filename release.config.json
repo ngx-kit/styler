@@ -1,6 +1,7 @@
 {
   "version": "1.0.0-beta.3",
   "vendors": {
-    "angular": "^4.0.0"
+    "angular": "^4.2.0",
+    "typescript": "^2.4.0"
   }
 }

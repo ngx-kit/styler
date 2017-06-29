@@ -7,7 +7,7 @@ export function compileMargin(rawValue: CssMargin): string {
   if (Array.isArray(rawValue)) {
     return compileMarginSmartValue(rawValue as CssMarginSmart);
   } else if (isObject(rawValue)) {
-    return compileMarginPropsValue(rawValue);
+    return compileMarginPropsValue(rawValue as CssMarginProps);
   } else {
     return `margin:${processAutoPx(rawValue)};`;
   }

@@ -7,7 +7,7 @@ export function compilePadding(rawValue: CssPadding): string {
   if (Array.isArray(rawValue)) {
     return compilePaddingSmartValue(rawValue as CssPaddingSmart);
   } else if (isObject(rawValue)) {
-    return compilePaddingPropsValue(rawValue);
+    return compilePaddingPropsValue(rawValue as CssPaddingProps);
   } else {
     return `padding:${processAutoPx(rawValue)};`;
   }

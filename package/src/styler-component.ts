@@ -39,6 +39,15 @@ export class StylerComponent implements OnDestroy {
     return hostElement;
   }
 
+  set hostSid(sid: string) {
+    // @todo check prev hostSid
+    // remove prev
+    this.renderer.removeAttribute(this.el.nativeElement, `host-sid-${this._hostSid}`);
+    // add new
+    this._hostSid = sid;
+    this.renderer.setAttribute(this.el.nativeElement, `host-sid-${this._hostSid}`, '');
+  }
+
   ngOnDestroy() {
     this.elements.forEach(element => {
       element.destroy();
@@ -69,6 +78,11 @@ export class StylerComponent implements OnDestroy {
       throw new Error('Styler: Component style already registered!');
     }
     this.style = style;
+    // create host if needed
+    if (this.style['host'] && !this.elements.find(e => e.name === 'host')) {
+      this.createElement('host');
+    }
+    // update elements
     this.elements.forEach(element => {
       element.update();
     });
@@ -76,14 +90,5 @@ export class StylerComponent implements OnDestroy {
 
   render(unit: StylerCompilerUnit, source?: string): void {
     this.compiler.render(unit, source);
-  }
-
-  set hostSid(sid: string) {
-    // @todo check prev hostSid
-    // remove prev
-    this.renderer.removeAttribute(this.el.nativeElement, `host-sid-${this._hostSid}`);
-    // add new
-    this._hostSid = sid;
-    this.renderer.setAttribute(this.el.nativeElement, `host-sid-${this._hostSid}`, '');
   }
 }

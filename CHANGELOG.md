@@ -1,3 +1,9 @@
+# 1.0.0-beta.3 (2017-06-29)
+
+### Bug Fixes
+
+* fix: init host element after styles registration ([f03aea7](https://github.com/ngx-kit/styler/commit/f03aea7))
+
 # 1.0.0-beta.2 (2017-06-29)
 
 ### Features

@@ -59,27 +59,22 @@ Use import with `.forRoot()` only once on the top level.
 
 ### :host styling
 
+Just define host element:
+
 ```typescript
-  ...
-  @HostBinding('attr.sid') get sid() {
-    return this.styler.host.sid;
-  };
-  ...
-  constructor(private styler: StylerComponent) {
-    this.styler.register({
-      host: {
-        border: '1px solid green',
-        padding: 8,
-      },
-    });
-    ...
+this.styler.register({
+  host: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+});
 ```
 
 ### Nested styles
  
 ```typescript
 this.styler.register({
-  host: {
+  wrapper: {
     $nest: {
       '&:hover': {
         background: 'grey',

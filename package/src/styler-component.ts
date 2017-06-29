@@ -1,4 +1,4 @@
-import { Inject, Injectable, OnDestroy, Optional, Self } from '@angular/core';
+import { ElementRef, Inject, Injectable, OnDestroy, Optional, Renderer2, Self } from '@angular/core';
 import { StylerCompilerUnit } from './compiler/compiler-unit';
 import { StylerCompilerService } from './compiler/compiler.service';
 import { ComponentStyle } from './meta/component';
@@ -16,10 +16,18 @@ export class StylerComponent implements OnDestroy {
 
   style: ComponentStyle;
 
+  private _hostSid: string;
+
   constructor(private compiler: StylerCompilerService,
-              @Self() @Optional() @Inject(componentStyle) private componentStyle: ComponentStyle) {
+              @Self() @Optional() @Inject(componentStyle) private componentStyle: ComponentStyle,
+              private el: ElementRef,
+              private renderer: Renderer2) {
     if (this.componentStyle) {
       this.register(this.componentStyle);
+      // create host element if defined
+      if (this.componentStyle['host']) {
+        this.createElement('host');
+      }
     }
   }
 
@@ -68,5 +76,14 @@ export class StylerComponent implements OnDestroy {
 
   render(unit: StylerCompilerUnit, source?: string): void {
     this.compiler.render(unit, source);
+  }
+
+  set hostSid(sid: string) {
+    // @todo check prev hostSid
+    // remove prev
+    this.renderer.removeAttribute(this.el.nativeElement, `host-sid-${this._hostSid}`);
+    // add new
+    this._hostSid = sid;
+    this.renderer.setAttribute(this.el.nativeElement, `host-sid-${this._hostSid}`, '');
   }
 }

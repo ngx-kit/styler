@@ -14,9 +14,6 @@ import { compilePadding } from './props/padding';
 
 @Injectable()
 export class StylerCompilerService {
-  // @todo move to DI
-  private readonly attr = 'sid';
-
   private debug = true;
 
   private debugId = 0;
@@ -195,10 +192,12 @@ export class StylerCompilerService {
     // render css or get from cache
     const rendered = this.rendered.find(r => r.hash === unit.hash);
     if (!rendered) {
-      const attrSelector = `[${this.attr}-${unit.hash}]`;
-      const attrValueSelector = `[${this.attr}="${unit.hash}"]`;
+      const attrSelector = `[sid-${unit.hash}]`;
+      const hostAttrSelector = `[host-sid-${unit.hash}]`;
+      const attrValueSelector = `[sid="${unit.hash}"]`;
       unit.css = compiled.reduce((prev, curr) => {
-        return `${prev}${attrSelector}${curr.selector},${attrValueSelector}${curr.selector}{${curr.props}}`;
+        return `${prev}${attrSelector}${curr.selector},${hostAttrSelector}${curr.selector},` +
+            `${attrValueSelector}${curr.selector}{${curr.props}}`;
       }, '');
       // save to cache
       this.rendered.push({hash: unit.hash, css: unit.css});

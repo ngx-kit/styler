@@ -55,6 +55,10 @@ export class StylerElement {
     // Update style
     this.unit.style = this.compile();
     this.render();
+    // Set hostSid
+    if (this.elementName === 'host') {
+      this.component.hostSid = this.sid;
+    }
   }
 
   private compile(): StyleDef {

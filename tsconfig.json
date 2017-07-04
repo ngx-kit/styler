@@ -2,11 +2,15 @@
   "angularCompilerOptions": {
     "genDir": "aot",
     "skipTemplateCodegen": true,
-    "skipMetadataEmit": false
+    "skipMetadataEmit": false,
+    "strictMetadataEmit": true,
+    "annotateForClosureCompiler": true,
+    "flatModuleOutFile": "styler.js",
+    "flatModuleId": "@ngx-kit/styler"
   },
   "compilerOptions": {
     "target": "es5",
-    "module": "commonjs",
+    "module": "es2015",
     "moduleResolution": "node",
     "sourceMap": true,
     "declaration": true,
@@ -19,14 +23,16 @@
     "suppressImplicitAnyIndexErrors": true,
     "lib": ["dom", "es2015", "es2016"],
     "baseUrl": ".",
-    "rootDir": ".",
+    "rootDir": "./package",
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true
   },
+  "files": [
+    "./package/public_api.ts"
+  ],
   "exclude": [
     "node_modules",
-    "dist",
-    "stage"
+    "dist"
   ]
 }

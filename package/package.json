@@ -2,9 +2,9 @@
   "name": "@ngx-kit/styler",
   "version": "0.0.0-PLACEHOLDER",
   "description": "ngx-kit - styler",
-  "main": "bundle/ngx-kit-styler.umd.js",
-  "module": "index.js",
-  "types": "index.d.ts",
+  "main": "./bundle/styler.umd.js",
+  "module": "./module/styler.js",
+  "types": "./styler.d.ts",
   "author": "Sasha Novik",
   "license": "MIT",
   "repository": {

@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "npm run build:clean && npm run build:ngc && npm run build:release",
+    "build": "npm run build:clean && npm run build:ngc && npm run build:rollup:es && npm run build:rollup:umd&& npm run build:release",
     "build:clean": "rimraf ./dist",
     "build:ngc": "ngc -p tsconfig.json",
-    "build:rollup": "rollup -c rollup.config.js",
+    "build:rollup:es": "rollup -c rollup.es.config.js",
+    "build:rollup:umd": "rollup -c rollup.umd.config.js",
     "build:release": "node release.js",
     "build-and-copy": "npm run build && node ./dev/dev-copy.js",
     "publish": "npm publish ./dist/package --access=public",

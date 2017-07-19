@@ -1,6 +1,6 @@
 {
   "angularCompilerOptions": {
-    "genDir": "aot",
+    "genDir": "./dist/package",
     "skipTemplateCodegen": true,
     "skipMetadataEmit": false,
     "strictMetadataEmit": true,
@@ -9,30 +9,35 @@
     "flatModuleId": "@ngx-kit/styler"
   },
   "compilerOptions": {
-    "target": "es5",
     "module": "es2015",
+    "target": "es5",
     "moduleResolution": "node",
-    "sourceMap": true,
-    "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "outDir": "dist",
     "removeComments": false,
     "strictNullChecks": true,
     "noImplicitAny": true,
     "suppressImplicitAnyIndexErrors": true,
-    "lib": ["dom", "es2015", "es2016"],
+    "lib": [
+      "dom",
+      "es2015",
+      "es2016"
+    ],
     "baseUrl": ".",
     "rootDir": "./package",
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "./dist/package",
+    "sourceMap": true,
+    "declaration": true
   },
   "files": [
     "./package/public_api.ts"
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "package/src/**/*.spec.ts"
   ]
 }

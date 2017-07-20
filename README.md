@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ngx-kit/styler.svg?branch=master)](https://travis-ci.org/ngx-kit/styler)
+
 # Angular Styler
 
 Keep CSS in TypeScript.

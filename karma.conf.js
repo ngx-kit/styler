@@ -1,14 +1,14 @@
-const webpackConfig = require('./webpack.test');
+const webpackConfig = require('./test/webpack.test');
 
 module.exports = function(config) {
   config.set({
     basePath: '',
     frameworks: ['jasmine'],
     files: [
-      './test.js'
+      './test/test.js'
     ],
     preprocessors: {
-      './test.js': ['webpack'],
+      './test/test.js': ['webpack'],
     },
     webpack: webpackConfig,
     webpackMiddleware: {

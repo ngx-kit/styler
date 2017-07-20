@@ -12,7 +12,7 @@
     "build-and-copy": "npm run build && node ./dev/dev-copy.js",
     "publish": "npm publish ./dist/package --access=public",
     "release": "npm run build && npm run publish",
-    "test": "karma start ./test/karma.conf.js"
+    "test": "karma start ./karma.conf.js"
   },
   "private": true,
   "dependencies": {

@@ -7,8 +7,8 @@ const globals = {
 };
 
 export default {
-  entry: './dist/styler.js',
-  dest: './dist/module/styler.js',
+  entry: './dist/package/styler.js',
+  dest: './dist/package/module/styler.js',
   format: 'es',
   exports: 'named',
   external: Object.keys(globals),

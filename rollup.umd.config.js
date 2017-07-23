@@ -7,8 +7,8 @@ const globals = {
 };
 
 export default {
-  entry: './dist/styler.js',
-  dest: './dist/bundle/styler.umd.js',
+  entry: './dist/package/styler.js',
+  dest: './dist/package/bundle/styler.umd.js',
   format: 'umd',
   exports: 'named',
   moduleName: 'styler',

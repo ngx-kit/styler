@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "npm run build:clean && npm run build:ngc && npm run build:rollup:es && npm run build:rollup:umd&& npm run build:release",
+    "build": "npm run build:clean && npm run build:ngc && npm run build:rollup:es && npm run build:rollup:umd && npm run build:release",
     "build:clean": "rimraf ./dist",
     "build:ngc": "ngc",
     "build:rollup:es": "rollup -c rollup.es.config.js",

@@ -231,6 +231,19 @@ TBD
 
 TBD
 
+### Raw Styles
+
+Add styles in the global scope by defined selector:
+
+```typescript
+constructor(private stylerService: StylerService) {
+  this.stylerService.setRaw('body', {
+    background: '#222222',
+    color: '#eeeeee',
+  });
+}
+```
+
 ## Services
 
 ### `StylerDefService`

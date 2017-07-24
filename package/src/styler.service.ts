@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StylerCompilerService } from './compiler/compiler.service';
+import { Style } from './meta/style';
 import { StylerComponent } from './styler-component';
 
 @Injectable()
@@ -11,6 +12,10 @@ export class StylerService {
 
   registerComponent(component: StylerComponent) {
     this.components.add(component);
+  }
+
+  setRaw(selector: string, styles: Style) {
+    this.compiler.setRaw(selector, styles);
   }
 
   unregisterComponent(component: StylerComponent) {

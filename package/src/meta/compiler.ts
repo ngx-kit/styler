@@ -1,3 +1,5 @@
+import { StyleDef } from './def';
+
 export const autoPx = [
   'border-radius',
   'border-top-width',

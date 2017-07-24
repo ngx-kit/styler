@@ -22,6 +22,8 @@ export class StylerCompilerService {
 
   private node: HTMLStyleElement;
 
+  private raws = new Map<string, string>();
+
   private rendered: {hash: string, css: string}[] = [];
 
   private units: StylerCompilerUnit[] = [];
@@ -68,6 +70,10 @@ export class StylerCompilerService {
         hashes: this.hashes,
       });
     }
+  }
+
+  setRaw(selector: string, styles: Style) {
+    this.raws.set(selector, this.compileProps(styles));
   }
 
   // @todo it should be optimized
@@ -141,7 +147,11 @@ export class StylerCompilerService {
   }
 
   private renderCss(): void {
-    const css = this.hashes.reduce((prev, curr) => {
+    let css = '';
+    this.raws.forEach((entryCss, selector) => {
+      css = `${css}${selector}{${entryCss}}`;
+    });
+    css = this.hashes.reduce((prev, curr) => {
       const localCss = this.rendered.find(r => r.hash === curr);
       if (localCss && localCss.css) {
         return `${prev}${localCss.css}`;
@@ -151,7 +161,7 @@ export class StylerCompilerService {
         }
         throw new Error(`Styler: local css for hash "${curr}" not found!`);
       }
-    }, '');
+    }, css);
     this.setCss(css);
   }
 

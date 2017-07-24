@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import { StylerCompilerUnit } from './compiler/compiler-unit';
 import { StyleDef, StyleReactiveDef } from './meta/def';
 import { StateSetter } from './meta/state';
@@ -21,8 +22,8 @@ export class StylerElement {
     return this.elementName;
   }
 
-  get sid(): string {
-    return this.unit.hash;
+  get sid$(): Observable<string> {
+    return this.unit.hash.asObservable();
   }
 
   set state(setterRaw: StateSetter) {
@@ -49,15 +50,13 @@ export class StylerElement {
     this.component.render(this.unit, `element:${this.elementName}.render`);
   }
 
-  update() {
+  update(withRender = true) {
     // Util
     this.stateSize = Object.keys(this._state).length;
     // Update style
     this.unit.style = this.compile();
-    this.render();
-    // Set hostSid
-    if (this.elementName === 'host') {
-      this.component.hostSid = this.sid;
+    if (withRender) {
+      this.render();
     }
   }
 

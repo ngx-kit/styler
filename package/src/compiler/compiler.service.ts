@@ -55,8 +55,8 @@ export class StylerCompilerService {
     // gather hashes
     this.hashes = [];
     this.units.forEach(unit => {
-      if (this.hashes.includes(unit.hash) === false) {
-        this.hashes.push(unit.hash);
+      if (this.hashes.includes(unit.hash.value) === false) {
+        this.hashes.push(unit.hash.value);
       }
     });
     // render
@@ -188,21 +188,23 @@ export class StylerCompilerService {
       }
     }
     // gen hash
-    unit.hash = this.hash.hash(compiled.map(c => c.selector + c.props).join());
+    const newHash = this.hash.hash(compiled.map(c => c.selector + c.props).join());
     // render css or get from cache
-    const rendered = this.rendered.find(r => r.hash === unit.hash);
+    const rendered = this.rendered.find(r => r.hash === newHash);
     if (!rendered) {
-      const attrSelector = `[sid-${unit.hash}]`;
-      const hostAttrSelector = `[host-sid-${unit.hash}]`;
-      const attrValueSelector = `[sid="${unit.hash}"]`;
+      const attrSelector = `[sid-${newHash}]`;
+      const hostAttrSelector = `[host-sid-${newHash}]`;
+      const attrValueSelector = `[sid="${newHash}"]`;
       unit.css = compiled.reduce((prev, curr) => {
         return `${prev}${attrSelector}${curr.selector},${hostAttrSelector}${curr.selector},` +
             `${attrValueSelector}${curr.selector}{${curr.props}}`;
       }, '');
       // save to cache
-      this.rendered.push({hash: unit.hash, css: unit.css});
+      this.rendered.push({hash: newHash, css: unit.css});
     } else {
       unit.css = rendered.css;
     }
+    // update hash in unit
+    unit.hash.next(newHash);
   }
 }

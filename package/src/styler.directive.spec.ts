@@ -1,6 +1,7 @@
 import { Component, DebugElement } from '@angular/core';
 import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { StylerComponent } from './styler-component';
 import { StylerDirective } from './styler.directive';
 
@@ -21,7 +22,7 @@ class StylerComponentMock {
   createElement(name: string) {
     const element = {
       name,
-      sid: 'sid',
+      sid$: new BehaviorSubject<string>('sid'),
       state: {},
       destroy() {
       },
@@ -81,19 +82,11 @@ describe('StylerDirective', () => {
   });
   it('[sid] should be updated after state change', () => {
     fixture.detectChanges();
-    service.elements[1].sid = 'updated';
+    service.elements[1].sid$.next('updated');
     container.complexState = 'new';
     fixture.detectChanges();
     const styledDiv = de.query(By.css('#complex'));
     expect(styledDiv.attributes['sid-sid']).toBeNull();
     expect(styledDiv.attributes['sid-updated']).toBeDefined();
-  });
-  it('[sid] should not be updated before state change', () => {
-    fixture.detectChanges();
-    service.elements[1].sid = 'updated';
-    fixture.detectChanges();
-    const styledDiv = de.query(By.css('#complex'));
-    expect(styledDiv.attributes['sid-sid']).toBeDefined();
-    expect(styledDiv.attributes['sid-updated']).toBeUndefined();
   });
 });

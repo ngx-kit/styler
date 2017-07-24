@@ -3,7 +3,8 @@ const globals = {
   "@angular/core": "ng.core",
   "@angular/common": "ng.common",
   "@angular/platform-browser": "ng.platform-browser",
-  "@angular/router": "ng.router"
+  "@angular/router": "ng.router",
+  "rxjs/BehaviorSubject": "Rx",
 };
 
 export default {

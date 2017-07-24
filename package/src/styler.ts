@@ -1,5 +1,6 @@
 export * from './styler.directive';
 export * from './styler.module';
+export * from './styler.service';
 export * from './styler-color.service';
 export * from './styler-component';
 export * from './styler-def.service';
@@ -16,3 +17,4 @@ export * from './meta/hash';
 export * from './meta/state';
 export * from './meta/style';
 export * from './meta/tokens';
+export * from './utils/merge-deep';

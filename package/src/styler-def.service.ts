@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { PickStyleDef, StyleDef } from './meta/def';
-import { mergeDeep } from './utils/merge-deep';
+import { mergeDeepAll } from './utils/merge-deep';
 
 @Injectable()
 export class StylerDefService {
@@ -8,9 +8,7 @@ export class StylerDefService {
   }
 
   merge(chunks: StyleDef[]): StyleDef {
-    const style = {};
-    mergeDeep(style, ...chunks);
-    return style;
+    return mergeDeepAll(chunks);
   }
 
   pick(state: string, styles: PickStyleDef, def: string | null = null): StyleDef {

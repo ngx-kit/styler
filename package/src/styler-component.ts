@@ -4,6 +4,7 @@ import { StylerCompilerService } from './compiler/compiler.service';
 import { ComponentStyle } from './meta/component';
 import { componentStyle } from './meta/tokens';
 import { StylerElement } from './styler-element';
+import { StylerService } from './styler.service';
 
 /**
  * @todo optimize & add cache
@@ -16,17 +17,19 @@ export class StylerComponent implements OnDestroy {
 
   style: ComponentStyle;
 
-  private _hostSid: string;
+  private hostSid: string;
 
   constructor(private compiler: StylerCompilerService,
               @Self() @Optional() @Inject(componentStyle) private componentStyle: ComponentStyle,
               private el: ElementRef,
-              private renderer: Renderer2) {
+              private renderer: Renderer2,
+              private stylerService: StylerService) {
+    this.stylerService.registerComponent(this);
     if (this.componentStyle) {
       this.register(this.componentStyle);
       // create host element if defined
       if (this.componentStyle['host']) {
-        this.createElement('host');
+        this.createHostElement();
       }
     }
   }
@@ -34,24 +37,16 @@ export class StylerComponent implements OnDestroy {
   get host(): StylerElement {
     let hostElement = this.elements.find(e => e.name === 'host');
     if (!hostElement) {
-      hostElement = this.createElement('host');
+      return this.createHostElement();
     }
     return hostElement;
-  }
-
-  set hostSid(sid: string) {
-    // @todo check prev hostSid
-    // remove prev
-    this.renderer.removeAttribute(this.el.nativeElement, `host-sid-${this._hostSid}`);
-    // add new
-    this._hostSid = sid;
-    this.renderer.setAttribute(this.el.nativeElement, `host-sid-${this._hostSid}`, '');
   }
 
   ngOnDestroy() {
     this.elements.forEach(element => {
       element.destroy();
     });
+    this.stylerService.unregisterComponent(this);
   }
 
   createElement(elementName: string): StylerElement {
@@ -80,7 +75,7 @@ export class StylerComponent implements OnDestroy {
     this.style = style;
     // create host if needed
     if (this.style['host'] && !this.elements.find(e => e.name === 'host')) {
-      this.createElement('host');
+      this.createHostElement();
     }
     // update elements
     this.elements.forEach(element => {
@@ -90,5 +85,30 @@ export class StylerComponent implements OnDestroy {
 
   render(unit: StylerCompilerUnit, source?: string): void {
     this.compiler.render(unit, source);
+  }
+
+  update(withRender = true) {
+    this.elements.forEach(element => {
+      element.update(withRender);
+    });
+  }
+
+  private createHostElement(): StylerElement {
+    const host = this.createElement('host');
+    host.sid$.subscribe(sid => {
+      this.setHostSid(sid);
+    });
+    return host;
+  }
+
+  private setHostSid(sid: string) {
+    // @todo check prev hostSid
+    if (this.hostSid !== sid) {
+      // remove prev
+      this.renderer.removeAttribute(this.el.nativeElement, `host-sid-${this.hostSid}`);
+      // add new
+      this.hostSid = sid;
+      this.renderer.setAttribute(this.el.nativeElement, `host-sid-${this.hostSid}`, '');
+    }
   }
 }

@@ -55,11 +55,10 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
   }
 
   ngAfterViewInit() {
-    this.update();
+    this.initUpdater();
   }
 
   ngOnChanges() {
-    this.update();
   }
 
   ngOnDestroy() {
@@ -67,6 +66,7 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
   }
 
   ngOnInit() {
+    this.initUpdater();
   }
 
   private checkRouterLink() {
@@ -84,23 +84,25 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
         this.linksWithHrefs.some(this.isLinkActive(this.router));
   }
 
+  private initUpdater() {
+    this.element.sid$.subscribe(sid => {
+      this.checkRouterLink();
+      this.updateSid(sid);
+    });
+  }
+
   private isLinkActive(router: Router): (link: (RouterLink | RouterLinkWithHref)) => boolean {
     return (link: RouterLink | RouterLinkWithHref) =>
         router.isActive(link.urlTree, true);
   }
 
-  private update() {
-    this.checkRouterLink();
-    this.updateSid();
-  }
-
-  private updateSid() {
+  private updateSid(sid: string) {
     // check if changed
-    if (this.sid !== this.element.sid) {
+    if (this.sid !== sid) {
       // remove prev
       this.renderer.removeAttribute(this.el.nativeElement, `sid-${this.sid}`);
       // add new
-      this.sid = this.element.sid;
+      this.sid = sid;
       this.renderer.setAttribute(this.el.nativeElement, `sid-${this.sid}`, '');
     }
   }

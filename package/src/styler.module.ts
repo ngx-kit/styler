@@ -7,6 +7,7 @@ import { StylerColorService } from './styler-color.service';
 import { StylerComponent } from './styler-component';
 import { StylerDefService } from './styler-def.service';
 import { StylerDirective } from './styler.directive';
+import { StylerService } from './styler.service';
 
 const exported = [
   StylerDirective,
@@ -39,6 +40,7 @@ export class StylerModule {
     return {
       ngModule: StylerModule,
       providers: [
+        StylerService,
         StylerCompilerService,
         StylerDefService,
         StylerColorService,

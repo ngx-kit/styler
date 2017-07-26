@@ -1,15 +1,8 @@
-const globals = {
-  "typescript": "ts",
-  "@angular/core": "ng.core",
-  "@angular/common": "ng.common",
-  "@angular/platform-browser": "ng.platform-browser",
-  "@angular/router": "ng.router",
-  "rxjs/BehaviorSubject": "Rx",
-};
+const globals = require('./rollup_globals');
 
 export default {
-  entry: './dist/package/styler.js',
-  dest: './dist/package/bundle/styler.umd.js',
+  entry: './dist/build/styler.js',
+  dest: './dist/release/bundle/styler.umd.js',
   format: 'umd',
   exports: 'named',
   moduleName: 'styler',

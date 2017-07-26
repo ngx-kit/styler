@@ -233,7 +233,7 @@ TBD
 
 ### Raw Styles
 
-Add styles in the global scope by defined selector:
+Add styles to the global scope by defining selector:
 
 ```typescript
 constructor(private stylerService: StylerService) {

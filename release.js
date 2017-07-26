@@ -11,8 +11,8 @@ const result = blueprint
     .replace(/0\.0\.0\-PLACEHOLDER/g, config.version)
     .replace(/0\.0\.0\-ANGULAR\-PLACEHOLDER/g, config.vendors.angular)
     .replace(/0\.0\.0\-TYPESCRIPT\-PLACEHOLDER/g, config.vendors.typescript);
-fs.writeFileSync(path.resolve('dist/package/package.json'), result);
+fs.writeFileSync(path.resolve('dist/release/package.json'), result);
 // Copy README
-fs.copySync(path.resolve('README.md'), path.resolve('dist/package/README.md'));
+fs.copySync(path.resolve('README.md'), path.resolve('dist/release/README.md'));
 
 console.log('release.js finished!');

@@ -1,6 +1,6 @@
 {
   "angularCompilerOptions": {
-    "genDir": "./dist/package",
+    "genDir": "./dist/build",
     "skipTemplateCodegen": true,
     "skipMetadataEmit": false,
     "strictMetadataEmit": true,
@@ -28,9 +28,10 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
-    "outDir": "./dist/package",
+    "outDir": "./dist/build",
     "sourceMap": true,
-    "declaration": true
+    "declaration": true,
+    "declarationDir": "./dist/release"
   },
   "files": [
     "./package/public_api.ts"

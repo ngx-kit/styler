@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
-import { DOCUMENT } from '@angular/platform-browser';
+import { DOCUMENT, ɵSharedStylesHost as SharedStylesHost } from '@angular/platform-browser';
 import { processAutoPx } from '../helpers/process-auto-px';
 import { autoPx } from '../meta/compiler';
 import { StylerHashService } from '../meta/hash';
@@ -12,6 +12,7 @@ import { compileBorder } from './props/border';
 import { compileMargin } from './props/margin';
 import { compilePadding } from './props/padding';
 
+// @todo use Set instead []
 @Injectable()
 export class StylerCompilerService {
   private debug = true;
@@ -20,17 +21,13 @@ export class StylerCompilerService {
 
   private hashes: string[] = [];
 
-  private node: HTMLStyleElement;
-
-  private raws = new Map<string, string>();
-
   private rendered: {hash: string, css: string}[] = [];
 
   private units: StylerCompilerUnit[] = [];
 
   constructor(@Inject(DOCUMENT) private doc: any,
+              private sharedStylesHost: SharedStylesHost,
               @Inject(stylerHash) private hash: StylerHashService) {
-    this.initStylesNode();
   }
 
   create(): StylerCompilerUnit {
@@ -70,10 +67,6 @@ export class StylerCompilerService {
         hashes: this.hashes,
       });
     }
-  }
-
-  setRaw(selector: string, styles: Style) {
-    this.raws.set(selector, this.compileProps(styles));
   }
 
   // @todo it should be optimized
@@ -117,28 +110,11 @@ export class StylerCompilerService {
     return `${prop}:${value};`;
   }
 
-  private getHeadNode(): HTMLHeadElement | null {
-    return this.doc && this.doc.head
-        ? document.head
-        : null;
-  }
-
   private hyphenate(propertyName: string): string {
     return propertyName
         .replace(/([A-Z])/g, '-$1')
         .replace(/^ms-/, '-ms-') // Internet Explorer vendor prefix.
         .toLowerCase();
-  }
-
-  private initStylesNode(): void {
-    const head = this.getHeadNode();
-    if (head) {
-      this.node = this.doc.createElement('style');
-      head.appendChild(this.node);
-    } else {
-      // @todo non-browser work
-      throw new Error('Styler: Non-browser work is not supported yet.');
-    }
   }
 
   private log(...params: any[]) {
@@ -147,26 +123,18 @@ export class StylerCompilerService {
   }
 
   private renderCss(): void {
-    let css = '';
-    this.raws.forEach((entryCss, selector) => {
-      css = `${css}${selector}{${entryCss}}`;
-    });
-    css = this.hashes.reduce((prev, curr) => {
-      const localCss = this.rendered.find(r => r.hash === curr);
+    const styles = this.hashes.map(hash => {
+      const localCss = this.rendered.find(r => r.hash === hash);
       if (localCss && localCss.css) {
-        return `${prev}${localCss.css}`;
+        return localCss.css;
       } else {
         if (this.debug) {
           this.log('rendered', this.rendered);
         }
-        throw new Error(`Styler: local css for hash "${curr}" not found!`);
+        throw new Error(`Styler: local css for hash "${hash}" not found!`);
       }
-    }, css);
-    this.setCss(css);
-  }
-
-  private setCss(css: string): void {
-    this.node.textContent = css;
+    });
+    this.sharedStylesHost.addStyles(styles);
   }
 
   private updateAllUnits(): void {

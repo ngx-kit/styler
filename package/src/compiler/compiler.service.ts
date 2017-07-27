@@ -174,8 +174,7 @@ export class StylerCompilerService {
       const hostAttrSelector = `[host-sid-${newHash}]`;
       const attrValueSelector = `[sid="${newHash}"]`;
       unit.css = compiled.reduce((prev, curr) => {
-        return `${prev}${attrSelector}${curr.selector},${hostAttrSelector}${curr.selector},` +
-            `${attrValueSelector}${curr.selector}{${curr.props}}`;
+        return `${prev}${attrSelector}${curr.selector},${attrValueSelector}${curr.selector}{${curr.props}}`;
       }, '');
       // save to cache
       this.rendered.push({hash: newHash, css: unit.css});

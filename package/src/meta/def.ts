@@ -11,8 +11,12 @@ export interface StyleReactiveDef {
   (state: any): StyleDef;
 }
 
+export interface WrappedStyleDef {
+  (): StyleDef;
+}
+
 export interface PickStyleDef {
-  [key: string]: StyleDef;
+  [key: string]: StyleDef | WrappedStyleDef;
 }
 
 export type DirectiveSelector = [string, StateSetter];

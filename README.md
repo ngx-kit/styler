@@ -231,15 +231,25 @@ TBD
 
 TBD
 
-### Raw Styles
-
-Add styles to the global scope by defining selector:
+### @keyframes
 
 ```typescript
-constructor(private stylerService: StylerService) {
-  this.stylerService.setRaw('body', {
-    background: '#222222',
-    color: '#eeeeee',
+constructor(private styler: StylerComponent,
+            private stylerService: StylerService) {
+  this.styler.register({
+    host: {
+      animationDuration: '1s',
+      animationName: this.stylerService.keyframes({
+        '0%': {
+          transform: 'rotate(0deg)',
+        },
+        '100%': {
+          transform: 'rotate(360deg)',
+        },
+      }),
+      animationTimingFunction: 'linear',
+      animationIterationCount: 'infinite',
+    },
   });
 }
 ```

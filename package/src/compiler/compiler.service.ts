@@ -1,5 +1,6 @@
+import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { DOCUMENT, ɵSharedStylesHost as SharedStylesHost } from '@angular/platform-browser';
+import { ɵSharedStylesHost as SharedStylesHost } from '@angular/platform-browser';
 import { processAutoPx } from '../helpers/process-auto-px';
 import { autoPx } from '../meta/compiler';
 import { StylerHashService } from '../meta/hash';
@@ -183,5 +184,16 @@ export class StylerCompilerService {
     }
     // update hash in unit
     unit.hash.next(newHash);
+  }
+
+  addKeyframes(def: any): string {
+    let css = '';
+    for (const key in def) {
+      css += `${key}{${this.compileProps(def[key])}}`
+    }
+    const selector = `kf-${this.hash.hash(css)}`;
+    // @todo impr performace by hash-caching
+    this.sharedStylesHost.addStyles([`@keyframes ${selector}{${css}}`]);
+    return selector;
   }
 }

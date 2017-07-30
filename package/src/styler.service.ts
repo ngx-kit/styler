@@ -24,4 +24,8 @@ export class StylerService {
     });
     this.compiler.render();
   }
+
+  keyframes(def: any): string {
+    return this.compiler.addKeyframes(def);
+  }
 }

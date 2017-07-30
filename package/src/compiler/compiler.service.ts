@@ -18,10 +18,6 @@ import { compilePadding } from './props/padding';
 export class StylerCompilerService {
   private readonly attrPrefix = 'sid-';
 
-  private debug = true;
-
-  private debugId = 0;
-
   private hashes = new Set<string>();
 
   private stylesBuffer = new Set<string>();
@@ -64,7 +60,6 @@ export class StylerCompilerService {
         return `${prev}${attrSelector}${curr.selector}{${curr.props}}`;
       }, '');
       this.addStyles(css);
-      console.log('add styles', css);
       this.hashes.add(hash);
     }
     return `${this.attrPrefix}${hash}`;
@@ -79,7 +74,6 @@ export class StylerCompilerService {
     if (!this.hashes.has(hash)) {
       // @todo impr performace by hash-caching
       this.addStyles(`@keyframes ${hash}{${css}}`);
-      console.log('add keyframe styles', css);
       this.hashes.add(hash);
     }
     return hash;
@@ -135,10 +129,5 @@ export class StylerCompilerService {
         .replace(/([A-Z])/g, '-$1')
         .replace(/^ms-/, '-ms-') // Internet Explorer vendor prefix.
         .toLowerCase();
-  }
-
-  private log(...params: any[]) {
-    this.debugId++;
-    console.log(`[${this.debugId}] Styler >> `, ...params);
   }
 }

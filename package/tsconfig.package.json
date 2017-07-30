@@ -1,0 +1,20 @@
+{
+  "extends": "../tsconfig.json",
+  "angularCompilerOptions": {
+    "genDir": "../dist/build",
+    "skipTemplateCodegen": true,
+    "skipMetadataEmit": false,
+    "strictMetadataEmit": true,
+    "annotateForClosureCompiler": true,
+    "flatModuleOutFile": "styler.js",
+    "flatModuleId": "styler"
+  },
+  "files": [
+    "./public_api.ts"
+  ],
+  "exclude": [
+    "../node_modules",
+    "../dist",
+    "./src/**/*.spec.ts"
+  ]
+}

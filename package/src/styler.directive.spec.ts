@@ -17,7 +17,7 @@ class ContainerComponent {
 }
 
 class StylerComponentMock {
-  elements = [];
+  elements: any[] = [];
 
   createElement(name: string) {
     const element = {
@@ -73,7 +73,7 @@ describe('StylerDirective', () => {
   it('[sid] should be setted', () => {
     fixture.detectChanges();
     const styledDiv = de.query(By.css('#basic'));
-    expect(styledDiv.attributes['sid-sid']).toBeDefined();
+    expect(styledDiv.attributes['sid']).toBeDefined();
   });
   it('state should be proxied to the service', () => {
     container.complexState = 'new';
@@ -86,7 +86,7 @@ describe('StylerDirective', () => {
     container.complexState = 'new';
     fixture.detectChanges();
     const styledDiv = de.query(By.css('#complex'));
-    expect(styledDiv.attributes['sid-sid']).toBeNull();
-    expect(styledDiv.attributes['sid-updated']).toBeDefined();
+    expect(styledDiv.attributes['sid']).toBeNull();
+    expect(styledDiv.attributes['updated']).toBeDefined();
   });
 });

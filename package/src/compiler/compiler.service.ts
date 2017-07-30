@@ -1,14 +1,14 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, NgZone } from '@angular/core';
 import { ɵSharedStylesHost as SharedStylesHost } from '@angular/platform-browser';
 import { processAutoPx } from '../helpers/process-auto-px';
 import { autoPx } from '../meta/compiler';
+import { StyleDef } from '../meta/def';
 import { StylerHashService } from '../meta/hash';
 import { Style } from '../meta/style';
 import { stylerHash } from '../meta/tokens';
 import { isString } from '../utils/is-string';
 import { objectFilter } from '../utils/object-filter';
-import { StylerCompilerUnit } from './compiler-unit';
 import { compileBorder } from './props/border';
 import { compileMargin } from './props/margin';
 import { compilePadding } from './props/padding';
@@ -16,58 +16,77 @@ import { compilePadding } from './props/padding';
 // @todo use Set instead []
 @Injectable()
 export class StylerCompilerService {
+  private readonly attrPrefix = 'sid-';
+
   private debug = true;
 
   private debugId = 0;
 
-  private hashes: string[] = [];
+  private hashes = new Set<string>();
 
-  private rendered: {hash: string, css: string}[] = [];
-
-  private units: StylerCompilerUnit[] = [];
+  private stylesBuffer = new Set<string>();
 
   constructor(@Inject(DOCUMENT) private doc: any,
               private sharedStylesHost: SharedStylesHost,
-              @Inject(stylerHash) private hash: StylerHashService) {
-  }
-
-  create(): StylerCompilerUnit {
-    const unit = new StylerCompilerUnit();
-    this.units.push(unit);
-    return unit;
-  }
-
-  destroyUnit(unit: StylerCompilerUnit) {
-    const index = this.units.indexOf(unit);
-    if (index !== -1) {
-      this.units.splice(index, 1);
-    }
-  }
-
-  render(unit?: StylerCompilerUnit, source?: string): void {
-    if (unit) {
-      // update passed unit
-      this.updateUnit(unit);
-    } else {
-      // update all units
-      this.updateAllUnits();
-    }
-    // gather hashes
-    this.hashes = [];
-    this.units.forEach(unit => {
-      if (this.hashes.includes(unit.hash.value) === false) {
-        this.hashes.push(unit.hash.value);
-      }
+              @Inject(stylerHash) private hash: StylerHashService,
+              private zone: NgZone) {
+    // add css to head on zone stable
+    this.zone.onStable.subscribe(() => {
+      this.sharedStylesHost.addStyles([Array.from(this.stylesBuffer).join('')]);
+      this.stylesBuffer.clear();
     });
-    // render
-    this.renderCss();
-    // debug
-    if (this.debug) {
-      this.log(`render(source:${source})`, {
-        units: this.units,
-        hashes: this.hashes,
-      });
+  }
+
+  renderElement(def: StyleDef): string {
+    // root
+    const compiled = [{
+      selector: '',
+      props: this.compileProps(objectFilter(def, ['$nest'])),
+    }];
+    // nested
+    if (def.$nest) {
+      for (const selector in def.$nest) {
+        const styles = def.$nest[selector];
+        if (styles) {
+          compiled.push({
+            selector: selector.replace(/&/g, ''),
+            props: this.compileProps(styles),
+          });
+        }
+      }
     }
+    // gen hash
+    const hash = this.hash.hash(compiled.map(c => c.selector + c.props).join());
+    // check if added
+    if (!this.hashes.has(hash)) {
+      const attrSelector = `[${this.attrPrefix}${hash}]`;
+      const css = compiled.reduce((prev, curr) => {
+        return `${prev}${attrSelector}${curr.selector}{${curr.props}}`;
+      }, '');
+      this.addStyles(css);
+      console.log('add styles', css);
+      this.hashes.add(hash);
+    }
+    return `${this.attrPrefix}${hash}`;
+  }
+
+  renderKeyframe(def: any): string {
+    let css = '';
+    for (const key in def) {
+      css += `${key}{${this.compileProps(def[key])}}`
+    }
+    const hash = `kf-${this.hash.hash(css)}`;
+    if (!this.hashes.has(hash)) {
+      // @todo impr performace by hash-caching
+      this.addStyles(`@keyframes ${hash}{${css}}`);
+      console.log('add keyframe styles', css);
+      this.hashes.add(hash);
+    }
+    return hash;
+  }
+
+  private addStyles(style: string) {
+    this.stylesBuffer.add(style);
   }
 
   // @todo it should be optimized
@@ -121,79 +140,5 @@ export class StylerCompilerService {
   private log(...params: any[]) {
     this.debugId++;
     console.log(`[${this.debugId}] Styler >> `, ...params);
-  }
-
-  private renderCss(): void {
-    const styles = this.hashes.map(hash => {
-      const localCss = this.rendered.find(r => r.hash === hash);
-      if (localCss && localCss.css) {
-        return localCss.css;
-      } else {
-        if (this.debug) {
-          this.log('rendered', this.rendered);
-        }
-        throw new Error(`Styler: local css for hash "${hash}" not found!`);
-      }
-    });
-    this.sharedStylesHost.addStyles(styles);
-  }
-
-  private updateAllUnits(): void {
-    this.units.forEach(unit => this.updateUnit(unit));
-    if (this.debug) {
-      this.log('updateAllUnits', {
-        units: this.units,
-        hashes: this.hashes,
-      });
-    }
-  }
-
-  private updateUnit(unit: StylerCompilerUnit): void {
-    // root
-    const compiled = [{
-      selector: '',
-      props: this.compileProps(objectFilter(unit.style, ['$nest'])),
-    }];
-    // nested
-    if (unit.style.$nest) {
-      for (const selector in unit.style.$nest) {
-        const styles = unit.style.$nest[selector];
-        if (styles) {
-          compiled.push({
-            selector: selector.replace(/&/g, ''),
-            props: this.compileProps(styles),
-          });
-        }
-      }
-    }
-    // gen hash
-    const newHash = this.hash.hash(compiled.map(c => c.selector + c.props).join());
-    // render css or get from cache
-    const rendered = this.rendered.find(r => r.hash === newHash);
-    if (!rendered) {
-      const attrSelector = `[sid-${newHash}]`;
-      const hostAttrSelector = `[host-sid-${newHash}]`;
-      const attrValueSelector = `[sid="${newHash}"]`;
-      unit.css = compiled.reduce((prev, curr) => {
-        return `${prev}${attrSelector}${curr.selector},${attrValueSelector}${curr.selector}{${curr.props}}`;
-      }, '');
-      // save to cache
-      this.rendered.push({hash: newHash, css: unit.css});
-    } else {
-      unit.css = rendered.css;
-    }
-    // update hash in unit
-    unit.hash.next(newHash);
-  }
-
-  addKeyframes(def: any): string {
-    let css = '';
-    for (const key in def) {
-      css += `${key}{${this.compileProps(def[key])}}`
-    }
-    const selector = `kf-${this.hash.hash(css)}`;
-    // @todo impr performace by hash-caching
-    this.sharedStylesHost.addStyles([`@keyframes ${selector}{${css}}`]);
-    return selector;
   }
 }

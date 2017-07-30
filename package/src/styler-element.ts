@@ -1,19 +1,20 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
-import { StylerCompilerUnit } from './compiler/compiler-unit';
 import { StyleDef, StyleReactiveDef } from './meta/def';
 import { StateSetter } from './meta/state';
 import { StylerComponent } from './styler-component';
 
 @Injectable()
 export class StylerElement {
+  private _sid$ = new BehaviorSubject<string>('');
+
   private _state: StateSetter = {};
 
   private stateSize = 0;
 
   constructor(private component: StylerComponent,
               private def: StyleDef | StyleReactiveDef,
-              private unit: StylerCompilerUnit,
               private elementName: string) {
     this.update();
   }
@@ -23,7 +24,7 @@ export class StylerElement {
   }
 
   get sid$(): Observable<string> {
-    return this.unit.hash.asObservable();
+    return this._sid$.asObservable();
   }
 
   set state(setterRaw: StateSetter) {
@@ -42,22 +43,11 @@ export class StylerElement {
     }
   }
 
-  destroy(): void {
-    this.component.destroyUnit(this.unit);
-  }
-
-  render() {
-    this.component.render(this.unit, `element:${this.elementName}.render`);
-  }
-
-  update(withRender = true) {
+  update() {
     // Util
     this.stateSize = Object.keys(this._state).length;
-    // Update style
-    this.unit.style = this.compile();
-    if (withRender) {
-      this.render();
-    }
+    // Update sid
+    this._sid$.next(this.component.renderElement(this.compile()));
   }
 
   private compile(): StyleDef {

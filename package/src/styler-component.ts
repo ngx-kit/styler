@@ -1,10 +1,10 @@
 import { ElementRef, Inject, Injectable, OnDestroy, Optional, Renderer2, Self } from '@angular/core';
-import { StylerCompilerUnit } from './compiler/compiler-unit';
 import { StylerCompilerService } from './compiler/compiler.service';
 import { ComponentStyle } from './meta/component';
 import { componentStyle } from './meta/tokens';
 import { StylerElement } from './styler-element';
 import { StylerService } from './styler.service';
+import { StyleDef } from './meta/def';
 
 /**
  * @todo optimize & add cache
@@ -43,9 +43,6 @@ export class StylerComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.elements.forEach(element => {
-      element.destroy();
-    });
     this.stylerService.unregisterComponent(this);
   }
 
@@ -53,19 +50,18 @@ export class StylerComponent implements OnDestroy {
     if (!this.style[elementName]) {
       throw new Error(`Styler: element with name "${elementName}" is not defined!`);
     }
-    const compilerUnit = this.compiler.create();
     // bind style to def function if needed
     const def = typeof this.style[elementName] === 'function'
         ? this.style[elementName].bind(this.style)
         : this.style[elementName];
     // create element
-    const element = new StylerElement(this, def, compilerUnit, elementName);
+    const element = new StylerElement(this, def, elementName);
     this.elements.push(element);
     return element;
   }
 
-  destroyUnit(unit: StylerCompilerUnit): void {
-    this.compiler.destroyUnit(unit);
+  renderElement(def: StyleDef): string {
+    return this.compiler.renderElement(def);
   }
 
   register(style: ComponentStyle): void {
@@ -83,13 +79,9 @@ export class StylerComponent implements OnDestroy {
     });
   }
 
-  render(unit: StylerCompilerUnit, source?: string): void {
-    this.compiler.render(unit, source);
-  }
-
-  update(withRender = true) {
+  update() {
     this.elements.forEach(element => {
-      element.update(withRender);
+      element.update();
     });
   }
 
@@ -105,10 +97,10 @@ export class StylerComponent implements OnDestroy {
     // @todo check prev hostSid
     if (this.hostSid !== sid) {
       // remove prev
-      this.renderer.removeAttribute(this.el.nativeElement, `sid-${this.hostSid}`);
+      this.renderer.removeAttribute(this.el.nativeElement, this.hostSid);
       // add new
       this.hostSid = sid;
-      this.renderer.setAttribute(this.el.nativeElement, `sid-${this.hostSid}`, '');
+      this.renderer.setAttribute(this.el.nativeElement, this.hostSid, '');
     }
   }
 }

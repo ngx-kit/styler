@@ -62,7 +62,7 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
   }
 
   ngOnDestroy() {
-    this.element.destroy();
+    // @todo destroy element
   }
 
   ngOnInit() {
@@ -100,10 +100,10 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
     // check if changed
     if (this.sid !== sid) {
       // remove prev
-      this.renderer.removeAttribute(this.el.nativeElement, `sid-${this.sid}`);
+      this.renderer.removeAttribute(this.el.nativeElement, this.sid);
       // add new
       this.sid = sid;
-      this.renderer.setAttribute(this.el.nativeElement, `sid-${this.sid}`, '');
+      this.renderer.setAttribute(this.el.nativeElement, this.sid, '');
     }
   }
 }

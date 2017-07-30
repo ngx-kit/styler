@@ -20,12 +20,11 @@ export class StylerService {
   updateComponents() {
     // @todo render only once
     this.components.forEach(component => {
-      component.update(false);
+      component.update();
     });
-    this.compiler.render();
   }
 
   keyframes(def: any): string {
-    return this.compiler.addKeyframes(def);
+    return this.compiler.renderKeyframe(def);
   }
 }

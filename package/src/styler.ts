@@ -6,7 +6,6 @@ export * from './styler-component';
 export * from './styler-def.service';
 export * from './styler-element';
 export * from './compiler/compiler.service';
-export * from './compiler/compiler-unit';
 export * from './compiler/default-hash.service';
 export * from './meta/color';
 export * from './meta/compiler';

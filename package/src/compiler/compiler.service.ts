@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable, NgZone } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { ɵSharedStylesHost as SharedStylesHost } from '@angular/platform-browser';
 import { processAutoPx } from '../helpers/process-auto-px';
 import { autoPx } from '../meta/compiler';
@@ -20,17 +20,9 @@ export class StylerCompilerService {
 
   private hashes = new Set<string>();
 
-  private stylesBuffer = new Set<string>();
-
   constructor(@Inject(DOCUMENT) private doc: any,
               private sharedStylesHost: SharedStylesHost,
-              @Inject(stylerHash) private hash: StylerHashService,
-              private zone: NgZone) {
-    // add css to head on zone stable
-    this.zone.onStable.subscribe(() => {
-      this.sharedStylesHost.addStyles([Array.from(this.stylesBuffer).join('')]);
-      this.stylesBuffer.clear();
-    });
+              @Inject(stylerHash) private hash: StylerHashService) {
   }
 
   renderElement(def: StyleDef): string {
@@ -80,7 +72,7 @@ export class StylerCompilerService {
   }
 
   private addStyles(style: string) {
-    this.stylesBuffer.add(style);
+    this.sharedStylesHost.addStyles([style]);
   }
 
   // @todo it should be optimized

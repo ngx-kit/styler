@@ -18,6 +18,7 @@ export class StylerService {
   }
 
   updateComponents() {
+    
     // @todo render only once
     this.components.forEach(component => {
       component.update();

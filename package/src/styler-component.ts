@@ -1,10 +1,10 @@
 import { ElementRef, Inject, Injectable, OnDestroy, Optional, Renderer2, Self } from '@angular/core';
 import { StylerCompilerService } from './compiler/compiler.service';
 import { ComponentStyle } from './meta/component';
+import { StyleDef } from './meta/def';
 import { componentStyle } from './meta/tokens';
 import { StylerElement } from './styler-element';
 import { StylerService } from './styler.service';
-import { StyleDef } from './meta/def';
 
 /**
  * @todo optimize & add cache
@@ -60,8 +60,8 @@ export class StylerComponent implements OnDestroy {
     return element;
   }
 
-  renderElement(def: StyleDef): string {
-    return this.compiler.renderElement(def);
+  keyframes(def: any): string {
+    return this.stylerService.keyframes(def);
   }
 
   register(style: ComponentStyle): void {
@@ -77,6 +77,10 @@ export class StylerComponent implements OnDestroy {
     this.elements.forEach(element => {
       element.update();
     });
+  }
+
+  renderElement(def: StyleDef): string {
+    return this.compiler.renderElement(def);
   }
 
   update() {

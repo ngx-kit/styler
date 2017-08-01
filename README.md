@@ -93,19 +93,7 @@ this.styler.register({
 
 ### Register media styles
 
-```typescript
-this.styler.register({
-  ...
-  $media: [
-    [{minWidth:0, maxWidth:600}, {
-      background: 'yellowgreen',
-    }],
-    [{minWidth:601}, {
-      background: 'skyblue',
-    }],
-  ],
-});
-```
+TBD
 
 ### Element state styling
 
@@ -234,12 +222,11 @@ TBD
 ### @keyframes
 
 ```typescript
-constructor(private styler: StylerComponent,
-            private stylerService: StylerService) {
+constructor(private styler: StylerComponent) {
   this.styler.register({
     host: {
       animationDuration: '1s',
-      animationName: this.stylerService.keyframes({
+      animationName: this.styler.keyframes({
         '0%': {
           transform: 'rotate(0deg)',
         },

@@ -4,11 +4,10 @@ import { ɵSharedStylesHost as SharedStylesHost } from '@angular/platform-browse
 import { processAutoPx } from '../helpers/process-auto-px';
 import { autoPx } from '../meta/compiler';
 import { StyleDef } from '../meta/def';
-import { StylerHashService } from '../meta/hash';
 import { Style } from '../meta/style';
-import { stylerHash } from '../meta/tokens';
 import { isString } from '../utils/is-string';
 import { objectFilter } from '../utils/object-filter';
+import { HashStrategy } from './hash/hash-strategy';
 import { compileBorder } from './props/border';
 import { compileMargin } from './props/margin';
 import { compilePadding } from './props/padding';
@@ -22,7 +21,7 @@ export class CompilerService {
 
   constructor(@Inject(DOCUMENT) private doc: any,
               private sharedStylesHost: SharedStylesHost,
-              @Inject(stylerHash) private hash: StylerHashService) {
+              private hash: HashStrategy) {
   }
 
   renderElement(def: StyleDef): string {

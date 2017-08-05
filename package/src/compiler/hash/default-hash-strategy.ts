@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { StylerHashService } from '../meta/hash';
+import { HashStrategy } from './hash-strategy';
 
 @Injectable()
-export class StylerDefaultHashService implements StylerHashService {
+export class DefaultHashStrategy implements HashStrategy {
   hash(input: string): string {
     let value = 5381;
     let i = input.length;

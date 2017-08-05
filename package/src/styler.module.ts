@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule, Provider } from '@angular/core';
-import { StylerCompilerService } from './compiler/compiler.service';
+import { ClassGenStategy } from './class-gen/class-gen-stategy';
+import { NoopClassGenStrategy } from './class-gen/noop-class-gen-strategy';
+import { CompilerService } from './compiler/compiler.service';
 import { StylerDefaultHashService } from './compiler/default-hash.service';
 import { componentStyle, stylerHash } from './meta/tokens';
 import { StylerColorService } from './styler-color.service';
@@ -41,12 +43,16 @@ export class StylerModule {
       ngModule: StylerModule,
       providers: [
         StylerService,
-        StylerCompilerService,
+        CompilerService,
         StylerDefService,
         StylerColorService,
         {
           provide: stylerHash,
           useClass: StylerDefaultHashService,
+        },
+        {
+          provide: ClassGenStategy,
+          useClass: NoopClassGenStrategy,
         },
       ],
     };

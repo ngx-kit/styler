@@ -28,6 +28,8 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
 
   @ContentChildren(RouterLinkWithHref, {descendants: true}) linksWithHrefs: QueryList<RouterLinkWithHref>;
 
+  private classes = new Set<string>();
+
   private element: StylerElement;
 
   private elementName: string | null = null;
@@ -89,11 +91,33 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
       this.checkRouterLink();
       this.updateSid(sid);
     });
+    this.element.classes$.subscribe(classes => {
+      this.component.setElClasses(this.el.nativeElement, this.classes, classes);
+      this.classes = new Set(classes);
+    });
   }
 
   private isLinkActive(router: Router): (link: (RouterLink | RouterLinkWithHref)) => boolean {
     return (link: RouterLink | RouterLinkWithHref) =>
         router.isActive(link.urlTree, true);
+  }
+
+  private updateClasses(classes: Set<string>) {
+    // remove classes
+    Array
+        .from(this.classes)
+        .filter(c => !classes.has(c))
+        .forEach(classToRemove => {
+          this.renderer.removeClass(this.el.nativeElement, classToRemove);
+        });
+    // add classes
+    Array
+        .from(classes)
+        .filter(c => !this.classes.has(c))
+        .forEach(classToAdd => {
+          this.renderer.addClass(this.el.nativeElement, classToAdd);
+        });
+    this.classes = new Set(classes);
   }
 
   private updateSid(sid: string) {

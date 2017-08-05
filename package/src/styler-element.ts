@@ -1,22 +1,32 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
+import { ClassGenStategy } from './class-gen/class-gen-stategy';
+import { CompilerService } from './compiler/compiler.service';
 import { StyleDef, StyleReactiveDef } from './meta/def';
 import { StateSetter } from './meta/state';
-import { StylerComponent } from './styler-component';
+import { componentClassPrefix, elementDef, elementName } from './meta/tokens';
 
 @Injectable()
 export class StylerElement {
+  private _classes$ = new BehaviorSubject<Set<string>>(new Set());
+
   private _sid$ = new BehaviorSubject<string>('');
 
   private _state: StateSetter = {};
 
   private stateSize = 0;
 
-  constructor(private component: StylerComponent,
-              private def: StyleDef | StyleReactiveDef,
-              private elementName: string) {
+  constructor(private compiler: CompilerService,
+              private classGen: ClassGenStategy,
+              @Inject(componentClassPrefix) private classPrefix: string,
+              @Inject(elementName) private elementName: string,
+              @Inject(elementDef) private def: StyleDef | StyleReactiveDef) {
     this.update();
+  }
+
+  get classes$() {
+    return this._classes$.asObservable();
   }
 
   get name(): string {
@@ -47,7 +57,15 @@ export class StylerElement {
     // Util
     this.stateSize = Object.keys(this._state).length;
     // Update sid
-    this._sid$.next(this.component.renderElement(this.compile()));
+    this._sid$.next(this.compiler.renderElement(this.compile()));
+    // Update class
+    this.updateClasses();
+  }
+
+  updateClasses() {
+    if (this.classPrefix) {
+      this._classes$.next(this.classGen.gen(this.classPrefix, this.elementName, this._state));
+    }
   }
 
   private compile(): StyleDef {

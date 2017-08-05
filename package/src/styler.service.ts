@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { StylerCompilerService } from './compiler/compiler.service';
+import { CompilerService } from './compiler/compiler.service';
 import { StylerComponent } from './styler-component';
 
 @Injectable()
 export class StylerService {
   private components: Set<StylerComponent> = new Set();
 
-  constructor(private compiler: StylerCompilerService) {
+  constructor(private compiler: CompilerService) {
   }
 
   registerComponent(component: StylerComponent) {
@@ -18,7 +18,7 @@ export class StylerService {
   }
 
   updateComponents() {
-    
+
     // @todo render only once
     this.components.forEach(component => {
       component.update();

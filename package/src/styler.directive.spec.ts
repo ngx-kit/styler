@@ -23,12 +23,16 @@ class StylerComponentMock {
     const element = {
       name,
       sid$: new BehaviorSubject<string>('sid'),
+      classes$: new BehaviorSubject<Set<string>>(new Set()),
       state: {},
-      destroy() {
+      destroy: () => {
       },
     };
     this.elements.push(element);
     return element;
+  }
+
+  setElClasses() {
   }
 }
 

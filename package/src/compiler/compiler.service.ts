@@ -15,7 +15,7 @@ import { compilePadding } from './props/padding';
 
 // @todo use Set instead []
 @Injectable()
-export class StylerCompilerService {
+export class CompilerService {
   private readonly attrPrefix = 'sid-';
 
   private hashes = new Set<string>();

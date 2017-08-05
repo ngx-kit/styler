@@ -241,6 +241,29 @@ constructor(private styler: StylerComponent) {
 }
 ```
 
+### Automatically add classes
+
+Styler can add classes to elements. Class attribute based on component name (should be setted), element name and element state.
+
+Provide `BemClassGenStrategy`:
+
+```typescript
+providers: [
+  {
+    provide: ClassGenStategy,
+    useClass: BemClassGenStrategy,
+  },
+],
+```
+
+Set component name:
+
+```typescript
+constructor(private styler: StylerComponent) {
+  this.styler.classPrefix = 'component-name';
+}
+```
+
 ## Services
 
 ### `StylerDefService`

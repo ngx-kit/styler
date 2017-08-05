@@ -1,8 +1,16 @@
-import { ElementRef, Inject, Injectable, OnDestroy, Optional, Renderer2, Self } from '@angular/core';
-import { StylerCompilerService } from './compiler/compiler.service';
+import {
+  ElementRef,
+  Inject,
+  Injectable,
+  Injector,
+  OnDestroy,
+  Optional,
+  ReflectiveInjector,
+  Renderer2,
+  Self,
+} from '@angular/core';
 import { ComponentStyle } from './meta/component';
-import { StyleDef } from './meta/def';
-import { componentStyle } from './meta/tokens';
+import { componentClassPrefix, componentStyle, elementDef, elementName } from './meta/tokens';
 import { StylerElement } from './styler-element';
 import { StylerService } from './styler.service';
 
@@ -13,17 +21,25 @@ import { StylerService } from './styler.service';
  */
 @Injectable()
 export class StylerComponent implements OnDestroy {
+  /**
+   * Class prefix used for native css styling by user.
+   * Is prefix is set, styler elements attach class based on prefix, elementName and state.
+   */
+  classPrefix: string;
+
   elements: StylerElement[] = [];
 
   style: ComponentStyle;
 
+  private hostClasses = new Set<string>();
+
   private hostSid: string;
 
-  constructor(private compiler: StylerCompilerService,
-              @Self() @Optional() @Inject(componentStyle) private componentStyle: ComponentStyle,
+  constructor(@Self() @Optional() @Inject(componentStyle) private componentStyle: ComponentStyle,
               private el: ElementRef,
               private renderer: Renderer2,
-              private stylerService: StylerService) {
+              private stylerService: StylerService,
+              private injector: Injector) {
     this.stylerService.registerComponent(this);
     if (this.componentStyle) {
       this.register(this.componentStyle);
@@ -46,20 +62,42 @@ export class StylerComponent implements OnDestroy {
     this.stylerService.unregisterComponent(this);
   }
 
-  createElement(elementName: string): StylerElement {
-    if (!this.style[elementName]) {
-      throw new Error(`Styler: element with name "${elementName}" is not defined!`);
+  createElement(name: string): StylerElement {
+    if (!this.style[name]) {
+      throw new Error(`Styler: element with name "${name}" is not defined!`);
     }
     // bind style to def function if needed
-    const def = typeof this.style[elementName] === 'function'
-        ? this.style[elementName].bind(this.style)
-        : this.style[elementName];
+    const def = typeof this.style[name] === 'function'
+        ? this.style[name].bind(this.style)
+        : this.style[name];
     // create element
-    const element = new StylerElement(this, def, elementName);
+    const injector = ReflectiveInjector.resolveAndCreate([
+      StylerElement,
+      {
+        provide: componentClassPrefix,
+        useValue: this.classPrefix,
+      },
+      {
+        provide: elementName,
+        useValue: name,
+      },
+      {
+        provide: elementDef,
+        useValue: def,
+      },
+    ], this.injector);
+    const element = injector.get(StylerElement) as StylerElement;
     this.elements.push(element);
     return element;
   }
 
+  /**
+   * Proxy to stylerService.
+   * Part of API (do not delete).
+   *
+   * @param def
+   * @returns {string}
+   */
   keyframes(def: any): string {
     return this.stylerService.keyframes(def);
   }
@@ -79,8 +117,21 @@ export class StylerComponent implements OnDestroy {
     });
   }
 
-  renderElement(def: StyleDef): string {
-    return this.compiler.renderElement(def);
+  setElClasses(el: Element, prevClasses: Set<string>, currClasses: Set<string>) {
+    // remove classes
+    Array
+        .from(prevClasses)
+        .filter(c => !currClasses.has(c))
+        .forEach(classToRemove => {
+          this.renderer.removeClass(el, classToRemove);
+        });
+    // add classes
+    Array
+        .from(currClasses)
+        .filter(c => !prevClasses.has(c))
+        .forEach(classToAdd => {
+          this.renderer.addClass(el, classToAdd);
+        });
   }
 
   update() {
@@ -93,6 +144,10 @@ export class StylerComponent implements OnDestroy {
     const host = this.createElement('host');
     host.sid$.subscribe(sid => {
       this.setHostSid(sid);
+    });
+    host.classes$.subscribe(classes => {
+      this.setElClasses(this.el.nativeElement, this.hostClasses, classes);
+      this.hostClasses = new Set(classes);
     });
     return host;
   }

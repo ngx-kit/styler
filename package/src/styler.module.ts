@@ -8,7 +8,6 @@ import { HashStrategy } from './compiler/hash/hash-strategy';
 import { componentStyle } from './meta/tokens';
 import { StylerColorService } from './styler-color.service';
 import { StylerComponent } from './styler-component';
-import { StylerDefService } from './styler-def.service';
 import { StylerDirective } from './styler.directive';
 import { StylerService } from './styler.service';
 
@@ -45,7 +44,6 @@ export class StylerModule {
       providers: [
         StylerService,
         CompilerService,
-        StylerDefService,
         StylerColorService,
         {
           provide: HashStrategy,

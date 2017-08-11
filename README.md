@@ -264,25 +264,21 @@ constructor(private styler: StylerComponent) {
 }
 ```
 
-## Services
+## Helpers
 
-### `StylerDefService`
+### Styles definition
 
-* `pick(state: string, styles, default?: string)` - returns styles[state|default] 
-* `toggle(state: boolean, styles)` - returns styles if state is true
-* `merge` - js deepMerge, needed if states have $nest props
+* `defPick(state: string, styles, default?: string)` - returns styles[state|default] 
+* `defPick(state: boolean, styles)` - returns styles if state is true
+* `defPick` - js deepMerge, needed if states have $nest props
 
-### `StylerColorService`
+### Colors
 
-Service for color manipulating.
+Helpers for color manipulating.
 
 ```ts
-import { StylerColorService } from '@ngx-kit/styler';
 ...
-constructor(private color: StylerColorService) {
-}
-...
-background: this.darken(0.2, someColorVar),
+background: darken(0.2, someColorVar),
 ```
 
 * `adjustHue`

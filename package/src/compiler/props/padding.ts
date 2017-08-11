@@ -1,4 +1,4 @@
-import { processAutoPx } from '../../helpers/process-auto-px';
+import { processAutoPx } from '../process-auto-px';
 import { CssPadding, CssPaddingProps, CssPaddingSmart } from '../../meta/style';
 import { isObject } from '../../utils/is-object';
 import { isUndefined } from '../../utils/is-undefined';

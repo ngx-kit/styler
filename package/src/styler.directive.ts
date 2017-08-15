@@ -3,6 +3,8 @@ import {
   ContentChildren,
   Directive,
   ElementRef,
+  forwardRef,
+  Inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -43,7 +45,7 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
 
   private sid: string;
 
-  constructor(private component: StylerComponent,
+  constructor(@Inject(forwardRef(() => StylerComponent)) private component: StylerComponent,
               private el: ElementRef,
               private renderer: Renderer2,
               private compiler: CompilerService,

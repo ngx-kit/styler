@@ -13,8 +13,6 @@ export class StylerElement {
 
   private _def$ = new BehaviorSubject<StyleDef>({});
 
-  private _sid$ = new BehaviorSubject<string>('');
-
   private _state: StateSetter = {};
 
   private stateSize = 0;
@@ -39,10 +37,6 @@ export class StylerElement {
     return this.elementName;
   }
 
-  get sid$(): Observable<string> {
-    return this._sid$.asObservable();
-  }
-
   set state(setterRaw: StateSetter) {
     const setter = setterRaw || {};
     if (this.isChanged(setter)) {
@@ -62,8 +56,7 @@ export class StylerElement {
   update() {
     // Util
     this.stateSize = Object.keys(this._state).length;
-    // Update sid
-    this._sid$.next(this.compiler.renderElement(this.compile()));
+    // Update def
     this._def$.next(this.compile());
     // Update class
     this.updateClasses();

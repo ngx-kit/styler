@@ -11,6 +11,8 @@ import { componentClassPrefix, elementDef, elementName } from './meta/tokens';
 export class StylerElement {
   private _classes$ = new BehaviorSubject<Set<string>>(new Set());
 
+  private _def$ = new BehaviorSubject<StyleDef>({});
+
   private _sid$ = new BehaviorSubject<string>('');
 
   private _state: StateSetter = {};
@@ -27,6 +29,10 @@ export class StylerElement {
 
   get classes$() {
     return this._classes$.asObservable();
+  }
+
+  get def$(): Observable<StyleDef> {
+    return this._def$.asObservable();
   }
 
   get name(): string {
@@ -58,6 +64,7 @@ export class StylerElement {
     this.stateSize = Object.keys(this._state).length;
     // Update sid
     this._sid$.next(this.compiler.renderElement(this.compile()));
+    this._def$.next(this.compile());
     // Update class
     this.updateClasses();
   }

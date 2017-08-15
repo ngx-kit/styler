@@ -9,9 +9,12 @@ import {
   Renderer2,
   Self,
 } from '@angular/core';
+import 'rxjs/add/observable/combineLatest';
+import { CompilerService } from './compiler/compiler.service';
 import { ComponentStyle } from './meta/component';
 import { componentClassPrefix, componentStyle, elementDef, elementName } from './meta/tokens';
 import { StylerElement } from './styler-element';
+import { StylerDirective } from './styler.directive';
 import { StylerService } from './styler.service';
 
 /**
@@ -39,7 +42,9 @@ export class StylerComponent implements OnDestroy {
               private el: ElementRef,
               private renderer: Renderer2,
               private stylerService: StylerService,
-              private injector: Injector) {
+              private injector: Injector,
+              private compiler: CompilerService,
+              @Self() @Optional() private stylerDirective: StylerDirective) {
     this.stylerService.registerComponent(this);
     if (this.componentStyle) {
       this.register(this.componentStyle);
@@ -142,9 +147,15 @@ export class StylerComponent implements OnDestroy {
 
   private createHostElement(): StylerElement {
     const host = this.createElement('host');
-    host.sid$.subscribe(sid => {
-      this.setHostSid(sid);
-    });
+    if (this.stylerDirective) {
+      // push host def to directive
+      this.stylerDirective.registerHostDef(host.def$);
+    } else {
+      // default host styling
+      host.def$.subscribe(dif => {
+        this.setHostSid(this.compiler.renderElement(dif));
+      });
+    }
     host.classes$.subscribe(classes => {
       this.setElClasses(this.el.nativeElement, this.hostClasses, classes);
       this.hostClasses = new Set(classes);

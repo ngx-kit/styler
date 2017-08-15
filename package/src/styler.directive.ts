@@ -12,7 +12,12 @@ import {
   Renderer2,
 } from '@angular/core';
 import { Router, RouterLink, RouterLinkWithHref } from '@angular/router';
-import { DirectiveSelector } from './meta/def';
+import 'rxjs/add/observable/combineLatest';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
+import { CompilerService } from './compiler/compiler.service';
+import { defMerge } from './helpers/def/def-merge';
+import { DirectiveSelector, StyleDef } from './meta/def';
 import { StylerComponent } from './styler-component';
 import { StylerElement } from './styler-element';
 import { isString } from './utils/is-string';
@@ -34,11 +39,14 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
 
   private elementName: string | null = null;
 
+  private hostDef$ = new BehaviorSubject<StyleDef>({});
+
   private sid: string;
 
   constructor(private component: StylerComponent,
               private el: ElementRef,
               private renderer: Renderer2,
+              private compiler: CompilerService,
               @Optional() private router: Router) {
   }
 
@@ -71,6 +79,10 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
     this.initUpdater();
   }
 
+  registerHostDef(def$: Observable<StyleDef>) {
+    def$.subscribe(this.hostDef$);
+  }
+
   private checkRouterLink() {
 //    if (this.router &&
 //        (this.links || this.linksWithHrefs) &&
@@ -87,10 +99,11 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
   }
 
   private initUpdater() {
-    this.element.sid$.subscribe(sid => {
-      this.checkRouterLink();
-      this.updateSid(sid);
-    });
+    Observable
+        .combineLatest(this.hostDef$, this.element.def$)
+        .subscribe((defs: StyleDef[]) => {
+          this.updateSid(this.compiler.renderElement(defMerge(defs)));
+        });
     this.element.classes$.subscribe(classes => {
       this.component.setElClasses(this.el.nativeElement, this.classes, classes);
       this.classes = new Set(classes);
@@ -100,24 +113,6 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
   private isLinkActive(router: Router): (link: (RouterLink | RouterLinkWithHref)) => boolean {
     return (link: RouterLink | RouterLinkWithHref) =>
         router.isActive(link.urlTree, true);
-  }
-
-  private updateClasses(classes: Set<string>) {
-    // remove classes
-    Array
-        .from(this.classes)
-        .filter(c => !classes.has(c))
-        .forEach(classToRemove => {
-          this.renderer.removeClass(this.el.nativeElement, classToRemove);
-        });
-    // add classes
-    Array
-        .from(classes)
-        .filter(c => !this.classes.has(c))
-        .forEach(classToAdd => {
-          this.renderer.addClass(this.el.nativeElement, classToAdd);
-        });
-    this.classes = new Set(classes);
   }
 
   private updateSid(sid: string) {

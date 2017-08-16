@@ -1,8 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { ɵSharedStylesHost as SharedStylesHost } from '@angular/platform-browser';
-import { processAutoPx } from './process-auto-px';
-import { autoPx } from '../meta/compiler';
+import { autoPx, processAutoPx } from './process-auto-px';
 import { StyleDef } from '../meta/def';
 import { Style } from '../meta/style';
 import { isString } from '../utils/is-string';

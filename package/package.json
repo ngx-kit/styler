@@ -4,7 +4,7 @@
   "description": "ngx-kit - styler",
   "main": "./bundle/styler.umd.js",
   "module": "./module/styler.js",
-  "types": "./styler.d.ts",
+  "typings": "./styler.d.ts",
   "author": "Sasha Novik",
   "license": "MIT",
   "repository": {

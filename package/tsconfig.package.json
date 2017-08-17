@@ -7,7 +7,7 @@
     "strictMetadataEmit": true,
     "annotateForClosureCompiler": true,
     "flatModuleOutFile": "styler.js",
-    "flatModuleId": "styler"
+    "flatModuleId": "@ngx-kit/styler"
   },
   "files": [
     "./public_api.ts"

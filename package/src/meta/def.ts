@@ -19,4 +19,5 @@ export interface PickStyleDef {
   [key: string]: StyleDef | WrappedStyleDef;
 }
 
+export type ElementDef = (StyleDef | StyleReactiveDef)[];
 export type DirectiveSelector = [string, StateSetter];

@@ -51,8 +51,11 @@ export function mergeDeep(target: any, source: any, optionsArgument?: any) {
   }
 }
 export function mergeDeepAll(array: any[], optionsArgument?: any) {
-  if (!Array.isArray(array) || array.length < 2) {
-    throw new Error('first argument should be an array with at least two elements')
+//  if (!Array.isArray(array) || array.length < 2) {
+//    throw new Error('first argument should be an array with at least two elements')
+//  }
+  if (!Array.isArray(array)) {
+    throw new Error('mergeDeepAll: first argument should be an array');
   }
   // we are sure there are at least 2 values, so it is safe to have no initial value
   return array.reduce(function (prev, next) {

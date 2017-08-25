@@ -3,9 +3,11 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import { ClassGenStategy } from './class-gen/class-gen-stategy';
 import { CompilerService } from './compiler/compiler.service';
-import { StyleDef, StyleReactiveDef } from './meta/def';
+import { ElementDef, StyleDef } from './meta/def';
 import { StateSetter } from './meta/state';
 import { componentClassPrefix, elementDef, elementName } from './meta/tokens';
+import { isFunction } from './utils/is-function';
+import { mergeDeepAll } from './utils/merge-deep';
 
 @Injectable()
 export class StylerElement {
@@ -21,7 +23,7 @@ export class StylerElement {
               private classGen: ClassGenStategy,
               @Inject(componentClassPrefix) private classPrefix: string,
               @Inject(elementName) private elementName: string,
-              @Inject(elementDef) private def: StyleDef | StyleReactiveDef) {
+              @Inject(elementDef) private def: ElementDef) {
     this.update();
   }
 
@@ -69,11 +71,11 @@ export class StylerElement {
   }
 
   private compile(): StyleDef {
-    if (typeof this.def === "function") {
-      return this.def(this._state);
-    } else {
-      return this.def;
-    }
+    return mergeDeepAll(this.def.map(d => {
+      return isFunction(d)
+          ? d(this._state)
+          : d;
+    }));
   }
 
   private isChanged(newState: StateSetter): boolean {

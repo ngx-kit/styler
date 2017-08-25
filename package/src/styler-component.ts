@@ -16,6 +16,8 @@ import { componentClassPrefix, componentStyle, elementDef, elementName } from '.
 import { StylerElement } from './styler-element';
 import { StylerDirective } from './styler.directive';
 import { StylerService } from './styler.service';
+import { isArray } from './utils/is-array';
+import { isFunction } from './utils/is-function';
 
 /**
  * @todo optimize & add cache
@@ -32,13 +34,13 @@ export class StylerComponent implements OnDestroy {
 
   elements: StylerElement[] = [];
 
-  style: ComponentStyle;
+  style: ComponentStyle[];
 
   private hostClasses = new Set<string>();
 
   private hostSid: string;
 
-  constructor(@Self() @Optional() @Inject(componentStyle) private componentStyle: ComponentStyle,
+  constructor(@Self() @Optional() @Inject(componentStyle) componentStyle: ComponentStyle | ComponentStyle[],
               private el: ElementRef,
               private renderer: Renderer2,
               private stylerService: StylerService,
@@ -46,12 +48,12 @@ export class StylerComponent implements OnDestroy {
               private compiler: CompilerService,
               @Self() @Optional() private stylerDirective: StylerDirective) {
     this.stylerService.registerComponent(this);
-    if (this.componentStyle) {
-      this.register(this.componentStyle);
-      // create host element if defined
-      if (this.componentStyle['host']) {
-        this.createHostElement();
-      }
+    if (componentStyle) {
+      this.register(componentStyle);
+//       create host element if defined
+//      if (this.componentStyle['host']) {
+//        this.createHostElement();
+//      }
     }
   }
 
@@ -68,13 +70,18 @@ export class StylerComponent implements OnDestroy {
   }
 
   createElement(name: string): StylerElement {
-    if (!this.style[name]) {
+    if (this.getStyle(name).length === 0) {
+      // @todo console.warning?
       throw new Error(`Styler: element with name "${name}" is not defined!`);
     }
     // bind style to def function if needed
-    const def = typeof this.style[name] === 'function'
-        ? this.style[name].bind(this.style)
-        : this.style[name];
+    const def = this.style
+        .filter(s => s[name])
+        .map(s => {
+          return isFunction(s[name])
+              ? s[name].bind(s)
+              : s[name];
+        });
     // create element
     const injector = ReflectiveInjector.resolveAndCreate([
       StylerElement,
@@ -96,6 +103,12 @@ export class StylerComponent implements OnDestroy {
     return element;
   }
 
+  getStyle(name: string) {
+    return this.style
+        .filter(s => s[name])
+        .map(s => s[name]);
+  }
+
   /**
    * Proxy to stylerService.
    * Part of API (do not delete).
@@ -107,13 +120,13 @@ export class StylerComponent implements OnDestroy {
     return this.stylerService.keyframes(def);
   }
 
-  register(style: ComponentStyle): void {
+  register(style: ComponentStyle | ComponentStyle[]): void {
     if (this.style) {
       throw new Error('Styler: Component style already registered!');
     }
-    this.style = style;
+    this.style = isArray(style) ? style : [style];
     // create host if needed
-    if (this.style['host'] && !this.elements.find(e => e.name === 'host')) {
+    if (this.getStyle('host').length > 0 && !this.elements.find(e => e.name === 'host')) {
       this.createHostElement();
     }
     // update elements

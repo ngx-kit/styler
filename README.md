@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/ngx-kit/styler.svg?branch=master)](https://travis-ci.org/ngx-kit/styler)
 [![npm version](https://badge.fury.io/js/%40ngx-kit%2Fstyler.svg)](https://www.npmjs.com/@ngx-kit/styler)
-[![Join Discord](http://ngx-kit.com/discord-badge.svg)](https://discord.gg/t2EN9bB)
+[![Join Discord](http://ngx-kit.com/_etc/discord-badge.svg)](https://discord.gg/t2EN9bB)
 
 # Angular Styler
 
@@ -204,6 +204,41 @@ export class NameStyle implements ComponentStyle {
 }
 ```
 
+### Multi-register
+
+Styles deep-merged from left to right. 
+
+```typescript
+this.styler.register([
+  {
+    host: {
+      background: '#ffffff',
+      color: 'yellow'
+    },
+  },
+  {
+    host: {
+      color: 'red',
+      fontSize: '1.1rem',
+    },
+  },
+]);
+```
+
+Similar to:
+
+```typescript
+this.styler.register([
+  {
+    host: {
+      background: '#ffffff',
+      color: 'red',
+      fontSize: '1.1rem',
+    },
+  },
+]);
+```
+
 ### Fallback styles
 
 TBD
@@ -213,7 +248,7 @@ TBD
 * `padding: [10, 20] => padding: '10px 20px'`
 * `padding: {top: 10, left: 30} => paddingTop: '10px', paddingLeft: '30px'`
 * `margin: [10, 20, 30] => padding: '10px 20px 30px'`
-* `border: [1, 'solid', 'blue] => border: '1px solid blue'`
+* `border: [1, 'solid', 'blue'] => border: '1px solid blue'`
 
 ### Mixins
 

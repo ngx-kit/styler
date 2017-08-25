@@ -50,10 +50,6 @@ export class StylerComponent implements OnDestroy {
     this.stylerService.registerComponent(this);
     if (componentStyle) {
       this.register(componentStyle);
-//       create host element if defined
-//      if (this.componentStyle['host']) {
-//        this.createHostElement();
-//      }
     }
   }
 

@@ -149,7 +149,7 @@ Provide styler view built-it module method:
 ```typescript
 @Component({
   ...
-  viewProviders: [StylerModule.forComponent(NameStyle)],
+  viewProviders: [StylerModule.forComponent(ThisComponentStyle)],
 ```
 
 Define style injectable:
@@ -159,7 +159,7 @@ import { Injectable } from '@angular/core';
 import { ComponentStyle, StylerDefService, StyleDef } from '@ngx-kit/styler';
 
 @Injectable()
-export class NameStyle implements ComponentStyle {
+export class ThisComponentStyle implements ComponentStyle {
   
   constructor(private def: StylerDefService) {
   }
@@ -206,7 +206,7 @@ export class NameStyle implements ComponentStyle {
 
 ### Multi-register
 
-Styles deep-merged from left to right. 
+Styles deep-merged from left to right.
 
 ```typescript
 this.styler.register([
@@ -237,6 +237,15 @@ this.styler.register([
     },
   },
 ]);
+```
+
+Provide few separated styles to component:
+
+```typescript
+viewProviders: [
+  StylerModule.forComponent(LayoutStyle),
+  StylerModule.forComponent(ThisComponentStyle),
+],
 ```
 
 ### Fallback styles

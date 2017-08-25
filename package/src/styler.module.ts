@@ -32,6 +32,7 @@ export class StylerModule {
       {
         provide: componentStyle,
         useClass: componentStyleClass,
+        multi: true,
       },
       StylerComponent,
     ];

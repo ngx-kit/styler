@@ -312,9 +312,9 @@ constructor(private styler: StylerComponent) {
 
 ### Styles definition
 
-* `defPick(state: string, styles, default?: string)` - returns styles[state|default] 
-* `defPick(state: boolean, styles)` - returns styles if state is true
-* `defPick` - js deepMerge, needed if states have $nest props
+* `defPick(state: string, styles: StyleDef, default?: string)` - returns styles[state|default] 
+* `defToggle(state: boolean, styles: StyleDef, falseStyles?: StyleDef)` - returns styles if state is true
+* `defMerge(styles: StyleDef[])` - js deepMerge, needed if states have $nest props
 
 ### Colors
 

@@ -106,7 +106,7 @@ export class CompilerService {
 
   private compileSingleProp(prop: string, rawValue: string): string {
     let value = '';
-    if (!isString(rawValue) && autoPx.includes(prop)) {
+    if (!isString(rawValue) && autoPx.indexOf(prop) !== -1) {
       value = processAutoPx(rawValue);
     } else {
       value = rawValue;

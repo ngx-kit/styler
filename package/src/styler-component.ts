@@ -176,10 +176,10 @@ export class StylerComponent implements OnDestroy {
     // @todo check prev hostSid
     if (this.hostSid !== sid) {
       // remove prev
-      this.renderer.removeAttribute(this.el.nativeElement, this.hostSid);
+      this.renderer.removeClass(this.el.nativeElement, this.hostSid);
       // add new
       this.hostSid = sid;
-      this.renderer.setAttribute(this.el.nativeElement, this.hostSid, '');
+      this.renderer.addClass(this.el.nativeElement, this.hostSid);
     }
   }
 }

@@ -121,10 +121,10 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
     // check if changed
     if (this.sid !== sid) {
       // remove prev
-      this.renderer.removeAttribute(this.el.nativeElement, this.sid);
+      this.renderer.removeClass(this.el.nativeElement, this.sid);
       // add new
       this.sid = sid;
-      this.renderer.setAttribute(this.el.nativeElement, this.sid, '');
+      this.renderer.addClass(this.el.nativeElement, this.sid);
     }
   }
 }

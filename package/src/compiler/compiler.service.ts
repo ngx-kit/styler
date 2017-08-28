@@ -1,12 +1,12 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { ɵSharedStylesHost as SharedStylesHost } from '@angular/platform-browser';
-import { autoPx, processAutoPx } from './process-auto-px';
 import { StyleDef } from '../meta/def';
 import { Style } from '../meta/style';
 import { isString } from '../utils/is-string';
 import { objectFilter } from '../utils/object-filter';
 import { HashStrategy } from './hash/hash-strategy';
+import { autoPx, processAutoPx } from './process-auto-px';
 import { compileBorder } from './props/border';
 import { compileMargin } from './props/margin';
 import { compilePadding } from './props/padding';
@@ -45,9 +45,9 @@ export class CompilerService {
     const hash = this.hash.hash(compiled.map(c => c.selector + c.props).join());
     // check if added
     if (!this.hashes.has(hash)) {
-      const attrSelector = `[${this.attrPrefix}${hash}]`;
+      const selector = `.${this.attrPrefix}${hash}`;
       const css = compiled.reduce((prev, curr) => {
-        return `${prev}${attrSelector}${curr.selector}{${curr.props}}`;
+        return `${prev}${selector}${curr.selector}{${curr.props}}`;
       }, '');
       this.addStyles(css);
       this.hashes.add(hash);
@@ -101,7 +101,7 @@ export class CompilerService {
         compiled += this.compileSingleProp(prop, rawValue);
       }
     }
-    return `${compiled}`;
+    return compiled;
   }
 
   private compileSingleProp(prop: string, rawValue: string): string {

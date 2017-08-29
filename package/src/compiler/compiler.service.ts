@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { ɵSharedStylesHost as SharedStylesHost } from '@angular/platform-browser';
+import { MediaQuery } from '../meta/css';
 import { StyleDef } from '../meta/def';
 import { Style } from '../meta/style';
 import { isString } from '../utils/is-string';
@@ -24,30 +25,23 @@ export class CompilerService {
   }
 
   renderElement(def: StyleDef): string {
-    // root
-    const compiled = [{
-      selector: '',
-      props: this.compileProps(objectFilter(def, ['$nest'])),
-    }];
-    // nested
-    if (def.$nest) {
-      for (const selector in def.$nest) {
-        const styles = def.$nest[selector];
-        if (styles) {
-          compiled.push({
-            selector: selector.replace(/&/g, ''),
-            props: this.compileProps(styles),
-          });
-        }
+    let compiled = this.compileDef(def);
+    // media
+    if (def.$media) {
+      for (const media of def.$media) {
+        const mediaCompiled = this.compileDef(media[1], this.compileMediaQuery(media[0]));
+        compiled = compiled.concat(mediaCompiled);
       }
     }
     // gen hash
-    const hash = this.hash.hash(compiled.map(c => c.selector + c.props).join());
+    const hash = this.hash.hash(compiled.map(c => c.media + c.selector + c.props).join());
     // check if added
     if (!this.hashes.has(hash)) {
       const selector = `.${this.attrPrefix}${hash}`;
       const css = compiled.reduce((prev, curr) => {
-        return `${prev}${selector}${curr.selector}{${curr.props}}`;
+        return curr.media ?
+            `${prev}${curr.media}{${selector}${curr.selector}{${curr.props}}}`
+            : `${prev}${selector}${curr.selector}{${curr.props}}`;
       }, '');
       this.addStyles(css);
       this.hashes.add(hash);
@@ -73,6 +67,40 @@ export class CompilerService {
     this.sharedStylesHost.addStyles([style]);
   }
 
+  private compileDef(def: StyleDef, media?: string) {
+    // root
+    const compiled = [{
+      selector: '',
+      media,
+      props: this.compileProps(objectFilter(def, ['$nest', '$media'])),
+    }];
+    // nested
+    if (def.$nest) {
+      for (const selector in def.$nest) {
+        const styles = def.$nest[selector];
+        if (styles) {
+          compiled.push({
+            selector: selector.replace(/&/g, ''),
+            media,
+            props: this.compileProps(styles),
+          });
+        }
+      }
+    }
+    return compiled;
+  }
+
+  private compileMediaQuery(mediaQuery: MediaQuery) {
+    const mediaQuerySections: string[] = [];
+    if (mediaQuery.type) mediaQuerySections.push(mediaQuery.type);
+    if (mediaQuery.orientation) mediaQuerySections.push(mediaQuery.orientation);
+    if (mediaQuery.minWidth) mediaQuerySections.push(`(min-width: ${processAutoPx(mediaQuery.minWidth)})`);
+    if (mediaQuery.maxWidth) mediaQuerySections.push(`(max-width: ${processAutoPx(mediaQuery.maxWidth)})`);
+    if (mediaQuery.minHeight) mediaQuerySections.push(`(min-height: ${processAutoPx(mediaQuery.minHeight)})`);
+    if (mediaQuery.maxHeight) mediaQuerySections.push(`(max-height: ${processAutoPx(mediaQuery.maxHeight)})`);
+    return `@media ${mediaQuerySections.join(' and ')}`;
+  }
+
   // @todo it should be optimized
   private compileProps(style: Style): string {
     let compiled = '';
@@ -80,6 +108,7 @@ export class CompilerService {
       const rawValue = style[rawProp];
       const prop = this.hyphenate(rawProp);
       // smart props
+      // @todo switch-case
       if (prop === 'padding') {
         compiled += compilePadding(rawValue);
       } else if (prop === 'margin') {

@@ -93,7 +93,19 @@ this.styler.register({
 
 ### Register media styles
 
-TBD
+```typescript
+this.styler.register({
+  wrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    $media: [
+      [{maxWidth: 600}, {
+        flexDirection: 'column',
+      }],
+    ],
+  },
+});
+```
 
 ### Element state styling
 

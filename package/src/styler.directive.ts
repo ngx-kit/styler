@@ -9,11 +9,10 @@ import {
   OnChanges,
   OnDestroy,
   OnInit,
-  Optional,
   QueryList,
   Renderer2,
 } from '@angular/core';
-import { Router, RouterLink, RouterLinkWithHref } from '@angular/router';
+import { RouterLink, RouterLinkWithHref } from '@angular/router';
 import 'rxjs/add/observable/combineLatest';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
@@ -24,9 +23,6 @@ import { StylerComponent } from './styler-component';
 import { StylerElement } from './styler-element';
 import { isString } from './utils/is-string';
 
-/**
- * @todo restore routerLinkActive handler
- */
 @Directive({
   selector: '[styler]',
 })
@@ -39,8 +35,6 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
 
   private element: StylerElement;
 
-  private elementName: string | null = null;
-
   private hostDef$ = new BehaviorSubject<StyleDef>({});
 
   private sid: string;
@@ -48,8 +42,7 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
   constructor(@Inject(forwardRef(() => StylerComponent)) private component: StylerComponent,
               private el: ElementRef,
               private renderer: Renderer2,
-              private compiler: CompilerService,
-              @Optional() private router: Router) {
+              private compiler: CompilerService) {
   }
 
   @Input()
@@ -85,21 +78,6 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
     def$.subscribe(this.hostDef$);
   }
 
-  private checkRouterLink() {
-//    if (this.router &&
-//        (this.links || this.linksWithHrefs) &&
-//        this.element &&
-//        this.element.hasState('routerLinkActive')) {
-//      const isActive = this.hasActiveLinks();
-//      this.element.state = {routerLinkActive: isActive};
-//    }
-  }
-
-  private hasActiveLinks(): boolean {
-    return this.links.some(this.isLinkActive(this.router)) ||
-        this.linksWithHrefs.some(this.isLinkActive(this.router));
-  }
-
   private initUpdater() {
     Observable
         .combineLatest(this.hostDef$, this.element.def$)
@@ -110,11 +88,6 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
       this.component.setElClasses(this.el.nativeElement, this.classes, classes);
       this.classes = new Set(classes);
     });
-  }
-
-  private isLinkActive(router: Router): (link: (RouterLink | RouterLinkWithHref)) => boolean {
-    return (link: RouterLink | RouterLinkWithHref) =>
-        router.isActive(link.urlTree, true);
   }
 
   private updateSid(sid: string) {

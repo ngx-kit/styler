@@ -74,7 +74,7 @@ describe('StylerDirective', () => {
   selector: 'container',
   template: `
     <div id="basic" styler="basic"></div>
-    <div id="complex" [styler]="['complex', complexState]"></div>
+    <div id="complex" [styler]="'complex'" [stylerState]="complexState"></div>
   `,
 })
 class ContainerComponent {

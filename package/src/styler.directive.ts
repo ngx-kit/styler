@@ -49,32 +49,16 @@ export class StylerDirective implements OnChanges, OnInit, OnDestroy, AfterViewI
               private renderer: Renderer2,
               private compiler: CompilerService) {
   }
-
-//  @Input()
-//  set styler(selector: string | DirectiveSelector) {
-//    if (selector) {
-//      // @todo validate selector
-//      if (!this.element) {
-//        const elementName = isString(selector) ? selector : selector[0];
-//        this.element = this.component.createElement(elementName);
-//      }
-//      if (!isString(selector)) {
-//        this.element.state = selector[1];
-//      }
-//    }
-//  }
+  
   ngAfterViewInit() {
     this.initUpdater();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('styler dir changes', changes);
     if ('elementName' in changes) {
-      console.log('!!! element creation', this.elementName);
       this.element = this.component.createElement(this.elementName);
     }
     if ('state' in changes) {
-      console.log('state changes', this.state);
       this.element.state = this.state;
     }
   }

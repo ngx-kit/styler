@@ -12,6 +12,7 @@ import {
 import 'rxjs/add/observable/combineLatest';
 import { CompilerService } from './compiler/compiler.service';
 import { ComponentStyle } from './meta/component';
+import { StateSetter } from './meta/state';
 import { componentClassPrefix, componentStyle, elementDef, elementName } from './meta/tokens';
 import { StylerElement } from './styler-element';
 import { StylerDirective } from './styler.directive';
@@ -36,9 +37,16 @@ export class StylerComponent implements OnDestroy {
 
   style: ComponentStyle[];
 
+  /**
+   * Component state, some sort of a global state.
+   */
+  private _state: StateSetter = {};
+
   private hostClasses = new Set<string>();
 
   private hostSid: string;
+
+  private stateSize = 0;
 
   constructor(@Self() @Optional() @Inject(componentStyle) componentStyle: ComponentStyle | ComponentStyle[],
               private el: ElementRef,
@@ -61,8 +69,28 @@ export class StylerComponent implements OnDestroy {
     return hostElement;
   }
 
+  get state() {
+    return this._state;
+  }
+
+  set state(setterRaw: StateSetter) {
+    const setter = setterRaw || {};
+    if (this.isChanged(setter)) {
+      this._state = {...setter};
+      this.update();
+    }
+  }
+
   ngOnDestroy() {
     this.stylerService.unregisterComponent(this);
+  }
+
+  applyState(setter: StateSetter): void {
+    const newState = {...this._state, ...setter};
+    if (this.isChanged(newState)) {
+      this._state = newState;
+      this.update();
+    }
   }
 
   createElement(name: string): StylerElement {
@@ -84,6 +112,10 @@ export class StylerComponent implements OnDestroy {
       {
         provide: componentClassPrefix,
         useValue: this.classPrefix,
+      },
+      {
+        provide: StylerComponent,
+        useValue: this,
       },
       {
         provide: elementName,
@@ -170,6 +202,19 @@ export class StylerComponent implements OnDestroy {
       this.hostClasses = new Set(classes);
     });
     return host;
+  }
+
+  private isChanged(newState: StateSetter): boolean {
+    if (Object.keys(newState).length === this.stateSize) {
+      for (const name in newState) {
+        if (newState[name] !== this._state[name]) {
+          return true;
+        }
+      }
+      return false;
+    } else {
+      return true;
+    }
   }
 
   private setHostSid(sid: string) {

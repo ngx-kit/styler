@@ -2,10 +2,10 @@ import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import { ClassGenStategy } from './class-gen/class-gen-stategy';
-import { CompilerService } from './compiler/compiler.service';
 import { ElementDef, StyleDef } from './meta/def';
 import { StateSetter } from './meta/state';
 import { componentClassPrefix, elementDef, elementName } from './meta/tokens';
+import { StylerComponent } from './styler-component';
 import { isFunction } from './utils/is-function';
 import { mergeDeepAll } from './utils/merge-deep';
 
@@ -19,8 +19,8 @@ export class StylerElement {
 
   private stateSize = 0;
 
-  constructor(private compiler: CompilerService,
-              private classGen: ClassGenStategy,
+  constructor(private classGen: ClassGenStategy,
+              private component: StylerComponent,
               @Inject(componentClassPrefix) private classPrefix: string,
               @Inject(elementName) private elementName: string,
               @Inject(elementDef) private def: ElementDef) {
@@ -73,7 +73,7 @@ export class StylerElement {
   private compile(): StyleDef {
     return mergeDeepAll(this.def.map(d => {
       return isFunction(d)
-          ? d(this._state)
+          ? d(this._state, this.component.state)
           : d;
     }));
   }

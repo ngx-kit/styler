@@ -11,7 +11,7 @@ export interface StyleDef extends StyleWithNestDef {
 }
 
 export interface StyleReactiveDef {
-  (state: any): StyleDef;
+  (state: any, componentState: any): StyleDef;
 }
 
 export interface WrappedStyleDef {

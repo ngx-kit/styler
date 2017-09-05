@@ -11,7 +11,7 @@
     "build:release": "node release.js",
     "build-and-copy": "npm run build && node ./dev/dev-copy.js",
     "publish": "npm publish ./dist/release --access=public",
-    "release": "npm run test && npm run build && npm run publish",
+    "release": "npm run build && npm run publish",
     "test": "karma start ./karma.conf.js --browsers Firefox --single-run",
     "test:local": "karma start ./karma.conf.js"
   },

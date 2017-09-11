@@ -29,7 +29,7 @@ export class CompilerService {
     // media
     if (def.$media) {
       for (const media of def.$media) {
-        const mediaCompiled = this.compileDef(media[1], this.compileMediaQuery(media[0]));
+        const mediaCompiled = this.compileDef(media[1], '', this.compileMediaQuery(media[0]));
         compiled = compiled.concat(mediaCompiled);
       }
     }
@@ -67,10 +67,10 @@ export class CompilerService {
     this.sharedStylesHost.addStyles([style]);
   }
 
-  private compileDef(def: StyleDef, media?: string) {
+  private compileDef(def: StyleDef, nest = '', media?: string) {
     // root
-    const compiled = [{
-      selector: '',
+    let compiled = [{
+      selector: nest,
       media,
       props: this.compileProps(objectFilter(def, ['$nest', '$media'])),
     }];
@@ -79,11 +79,10 @@ export class CompilerService {
       for (const selector in def.$nest) {
         const styles = def.$nest[selector];
         if (styles) {
-          compiled.push({
-            selector: selector.replace(/&/g, ''),
-            media,
-            props: this.compileProps(styles),
-          });
+          compiled = [
+            ...compiled,
+            ...this.compileDef(styles, nest + selector.replace(/&/g, ''), media),
+          ];
         }
       }
     }

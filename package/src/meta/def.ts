@@ -2,12 +2,9 @@ import { MediaQuery, NestedCSSSelectors } from './css';
 import { StateSetter } from './state';
 import { Style } from './style';
 
-export interface StyleWithNestDef extends Style {
-  $nest?: NestedCSSSelectors<Style>;
-}
-
-export interface StyleDef extends StyleWithNestDef {
-  $media?: [MediaQuery, StyleWithNestDef][];
+export interface StyleDef extends Style {
+  $media?: [MediaQuery, StyleDef][];
+  $nest?: NestedCSSSelectors<StyleDef>;
 }
 
 export interface StyleReactiveDef {

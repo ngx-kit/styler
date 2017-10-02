@@ -1,6 +1,5 @@
 [![Build Status](https://travis-ci.org/ngx-kit/styler.svg?branch=master)](https://travis-ci.org/ngx-kit/styler)
 [![npm version](https://badge.fury.io/js/%40ngx-kit%2Fstyler.svg)](https://www.npmjs.com/@ngx-kit/styler)
-[![Join Discord](http://ngx-kit.com/_etc/discord-badge.svg)](https://discord.gg/t2EN9bB)
 
 # Angular Styler
 

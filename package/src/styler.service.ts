@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CompilerService } from './compiler/compiler.service';
 import { StylerComponent } from './styler-component';
+import { StyleDef } from './meta/def';
 
 @Injectable()
 export class StylerService {
@@ -27,5 +28,9 @@ export class StylerService {
 
   keyframes(def: any): string {
     return this.compiler.renderKeyframe(def);
+  }
+
+  style(def: StyleDef): string {
+    return this.compiler.renderElement(def);
   }
 }

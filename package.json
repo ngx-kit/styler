@@ -1,6 +1,6 @@
 {
   "name": "styler-src",
-  "version": "1.0.0-beta.14",
+  "version": "1.0.0-beta.15",
   "license": "MIT",
   "scripts": {
     "build": "npm run build:clean && npm run build:ngc && npm run build:rollup:es && npm run build:rollup:umd && npm run build:release",

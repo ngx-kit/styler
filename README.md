@@ -3,6 +3,8 @@
 
 # Angular Styler
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/ngx-kit/styler.svg)](https://greenkeeper.io/)
+
 Keep CSS in TypeScript.
 
 Currently in a deep beta!
